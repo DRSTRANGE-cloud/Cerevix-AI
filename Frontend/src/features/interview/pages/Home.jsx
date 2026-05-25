@@ -1,33 +1,107 @@
-import React, { useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import "../style/home.scss"
 import { useInterview } from '../hooks/useInterview.js'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
+import { useAuth } from '../../auth/hooks/useAuth.js'
+import { useToast } from '../../../components/toast.context.js'
 
 const Home = () => {
 
-    const { loading, generateReport,reports } = useInterview()
+    const { loading, generateReport, reports, getReports } = useInterview()
+    const { user, handleLogout } = useAuth()
+    const { showToast } = useToast()
     const [ jobDescription, setJobDescription ] = useState("")
     const [ selfDescription, setSelfDescription ] = useState("")
-    const resumeInputRef = useRef()
+    const [ resumeFile, setResumeFile ] = useState(null)
+    const [ formError, setFormError ] = useState("")
 
     const navigate = useNavigate()
 
-    const handleGenerateReport = async () => {
-        const resumeFile = resumeInputRef.current.files[ 0 ]
-        const data = await generateReport({ jobDescription, selfDescription, resumeFile })
-        navigate(`/interview/${data._id}`)
+    useEffect(() => {
+        getReports().catch((error) => showToast(error.message, "error"))
+    }, [ getReports, showToast ])
+
+    const handleGenerateReport = async (event) => {
+        event.preventDefault()
+        setFormError("")
+
+        if (jobDescription.trim().length < 40) {
+            setFormError("Paste a fuller job description before generating a plan.")
+            return
+        }
+
+        if (!resumeFile && !selfDescription.trim()) {
+            setFormError("Upload a resume PDF or add a quick self-description.")
+            return
+        }
+
+        try {
+            const data = await generateReport({ jobDescription, selfDescription, resumeFile })
+            showToast("Interview plan generated.", "success")
+            navigate(`/interview/${data._id}`)
+        } catch (error) {
+            setFormError(error.message)
+        }
+    }
+
+    const handleFileChange = (event) => {
+        const file = event.target.files?.[0]
+
+        if (!file) {
+            setResumeFile(null)
+            return
+        }
+
+        if (file.type !== "application/pdf") {
+            setFormError("Resume upload must be a PDF file.")
+            event.target.value = ""
+            setResumeFile(null)
+            return
+        }
+
+        if (file.size > 3 * 1024 * 1024) {
+            setFormError("Resume PDF must be 3MB or smaller.")
+            event.target.value = ""
+            setResumeFile(null)
+            return
+        }
+
+        setFormError("")
+        setResumeFile(file)
+    }
+
+    const logout = async () => {
+        try {
+            await handleLogout()
+            showToast("Logged out.", "success")
+            navigate("/login")
+        } catch (error) {
+            showToast(error.message, "error")
+        }
     }
 
     if (loading) {
         return (
-            <main className='loading-screen'>
-                <h1>Loading your interview plan...</h1>
+            <main className='app-shell app-shell--center'>
+                <div className="skeleton-card" aria-label="Loading interview plans" />
             </main>
         )
     }
 
     return (
         <div className='home-page'>
+            <nav className="top-nav" aria-label="Primary navigation">
+                <div>
+                    <strong>Cerevix AI</strong>
+                    <span>{user?.username}</span>
+                </div>
+                <div className="top-nav__links">
+                    <Link to="/dashboard">Dashboard</Link>
+                    <Link to="/ats">ATS Engine</Link>
+                    <Link to="/mock-interview">Mock Interview</Link>
+                </div>
+                <button className="button ghost-button" onClick={logout}>Logout</button>
+            </nav>
 
             {/* Page Header */}
             <header className='page-header'>
@@ -36,7 +110,7 @@ const Home = () => {
             </header>
 
             {/* Main Card */}
-            <div className='interview-card'>
+            <form className='interview-card' onSubmit={handleGenerateReport} noValidate>
                 <div className='interview-card__body'>
 
                     {/* Left Panel - Job Description */}
@@ -50,11 +124,13 @@ const Home = () => {
                         </div>
                         <textarea
                             onChange={(e) => { setJobDescription(e.target.value) }}
+                            value={jobDescription}
                             className='panel__textarea'
                             placeholder={`Paste the full job description here...\ne.g. 'Senior Frontend Engineer at Google requires proficiency in React, TypeScript, and large-scale system design...'`}
                             maxLength={5000}
+                            required
                         />
-                        <div className='char-counter'>0 / 5000 chars</div>
+                        <div className='char-counter'>{jobDescription.length} / 5000 chars</div>
                     </div>
 
                     {/* Vertical Divider */}
@@ -80,8 +156,8 @@ const Home = () => {
                                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 16 12 12 8 16" /><line x1="12" y1="12" x2="12" y2="21" /><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" /></svg>
                                 </span>
                                 <p className='dropzone__title'>Click to upload or drag &amp; drop</p>
-                                <p className='dropzone__subtitle'>PDF or DOCX (Max 5MB)</p>
-                                <input ref={resumeInputRef} hidden type='file' id='resume' name='resume' accept='.pdf,.docx' />
+                                <p className='dropzone__subtitle'>{resumeFile ? resumeFile.name : "PDF only (Max 3MB)"}</p>
+                                <input onChange={handleFileChange} hidden type='file' id='resume' name='resume' accept='application/pdf,.pdf' />
                             </label>
                         </div>
 
@@ -93,6 +169,7 @@ const Home = () => {
                             <label className='section-label' htmlFor='selfDescription'>Quick Self-Description</label>
                             <textarea
                                 onChange={(e) => { setSelfDescription(e.target.value) }}
+                                value={selfDescription}
                                 id='selfDescription'
                                 name='selfDescription'
                                 className='panel__textarea panel__textarea--short'
@@ -113,14 +190,16 @@ const Home = () => {
                 {/* Card Footer */}
                 <div className='interview-card__footer'>
                     <span className='footer-info'>AI-Powered Strategy Generation &bull; Approx 30s</span>
+                    {formError && <span className="footer-error" role="alert">{formError}</span>}
                     <button
-                        onClick={handleGenerateReport}
+                        type="submit"
+                        disabled={loading}
                         className='generate-btn'>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" /></svg>
-                        Generate My Interview Strategy
+                        {loading ? "Generating..." : "Generate My Interview Strategy"}
                     </button>
                 </div>
-            </div>
+            </form>
 
             {/* Recent Reports List */}
             {reports.length > 0 && (
@@ -139,11 +218,6 @@ const Home = () => {
             )}
 
             {/* Page Footer */}
-            <footer className='page-footer'>
-                <a href='#'>Privacy Policy</a>
-                <a href='#'>Terms of Service</a>
-                <a href='#'>Help Center</a>
-            </footer>
         </div>
     )
 }

@@ -1,48 +1,99 @@
-import React,{useState} from 'react'
-import { useNavigate, Link } from 'react-router'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { Link, Navigate, useNavigate } from 'react-router'
+import FormField from '../../../components/FormField'
+import { useToast } from '../../../components/toast.context'
+import { loginSchema } from '../auth.schema'
 import "../auth.form.scss"
 import { useAuth } from '../hooks/useAuth'
 
 const Login = () => {
-
-    const { loading, handleLogin } = useAuth()
+    const { checkingSession, isAuthenticated, loading, handleLogin } = useAuth()
+    const { showToast } = useToast()
     const navigate = useNavigate()
+    const [ serverError, setServerError ] = useState("")
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting, isValid }
+    } = useForm({
+        resolver: zodResolver(loginSchema),
+        mode: "onChange",
+        defaultValues: {
+            email: "",
+            password: "",
+        }
+    })
 
-    const [ email, setEmail ] = useState("")
-    const [ password, setPassword ] = useState("")
+    const onSubmit = async (values) => {
+        setServerError("")
 
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-        await handleLogin({email,password})
-        navigate('/')
+        try {
+            await handleLogin(values)
+            showToast("Welcome back.", "success")
+            navigate('/')
+        } catch (error) {
+            setServerError(error.message)
+        }
     }
 
-    if(loading){
-        return (<main><h1>Loading.......</h1></main>)
+    if (checkingSession) {
+        return (
+            <main className="auth-page">
+                <div className="skeleton-card" aria-label="Checking session" />
+            </main>
+        )
     }
 
+    if (isAuthenticated) {
+        return <Navigate to="/" replace />
+    }
+
+    const isBusy = loading || isSubmitting
 
     return (
-        <main>
-            <div className="form-container">
-                <h1>Login</h1>
-                <form onSubmit={handleSubmit}>
-                    <div className="input-group">
-                        <label htmlFor="email">Email</label>
+        <main className="auth-page">
+            <section className="form-container" aria-labelledby="login-title">
+                <div className="auth-copy">
+                    <p>Cerevix AI</p>
+                    <h1 id="login-title">Log in</h1>
+                    <span>Continue building interview plans tailored to your resume and target roles.</span>
+                </div>
+
+                <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                    {serverError && <p className="form-error" role="alert">{serverError}</p>}
+
+                    <FormField id="email" label="Email" error={errors.email?.message}>
                         <input
-                            onChange={(e) => { setEmail(e.target.value) }}
-                            type="email" id="email" name='email' placeholder='Enter email address' />
-                    </div>
-                    <div className="input-group">
-                        <label htmlFor="password">Password</label>
+                            {...register("email")}
+                            aria-invalid={Boolean(errors.email)}
+                            aria-describedby={errors.email ? "email-error" : undefined}
+                            autoComplete="email"
+                            type="email"
+                            id="email"
+                            placeholder="you@example.com"
+                        />
+                    </FormField>
+
+                    <FormField id="password" label="Password" error={errors.password?.message}>
                         <input
-                            onChange={(e) => { setPassword(e.target.value) }}
-                            type="password" id="password" name='password' placeholder='Enter password' />
-                    </div>
-                    <button className='button primary-button' >Login</button>
+                            {...register("password")}
+                            aria-invalid={Boolean(errors.password)}
+                            aria-describedby={errors.password ? "password-error" : undefined}
+                            autoComplete="current-password"
+                            type="password"
+                            id="password"
+                            placeholder="Enter your password"
+                        />
+                    </FormField>
+
+                    <button className='button primary-button' disabled={!isValid || isBusy}>
+                        {isBusy ? "Logging in..." : "Login"}
+                    </button>
                 </form>
-                <p>Don't have an account? <Link to={"/register"} >Register</Link> </p>
-            </div>
+                <p className="auth-switch">Don't have an account? <Link to="/register">Register</Link></p>
+            </section>
         </main>
     )
 }

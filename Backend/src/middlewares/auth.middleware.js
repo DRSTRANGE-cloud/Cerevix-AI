@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken")
 const tokenBlacklistModel = require("../models/blacklist.model")
+const { jwtSecret } = require("../config/env")
 
 
 
@@ -24,7 +25,7 @@ async function authUser(req, res, next) {
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        const decoded = jwt.verify(token, jwtSecret)
 
         req.user = decoded
 

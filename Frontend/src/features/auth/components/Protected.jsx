@@ -1,17 +1,20 @@
 import { useAuth } from "../hooks/useAuth";
 import { Navigate } from "react-router";
-import React from 'react'
 
 const Protected = ({children}) => {
-    const { loading,user } = useAuth()
+    const { checkingSession,user } = useAuth()
 
 
-    if(loading){
-        return (<main><h1>Loading...</h1></main>)
+    if(checkingSession){
+        return (
+            <main className="app-shell app-shell--center">
+                <div className="skeleton-card" aria-label="Checking session" />
+            </main>
+        )
     }
 
     if(!user){
-        return <Navigate to={'/login'} />
+        return <Navigate to={'/login'} replace />
     }
     
     return children

@@ -1,20 +1,147 @@
 @use "./style/button.scss";
 
+:root {
+    color-scheme: dark;
+    --color-bg: #0b1020;
+    --color-surface: #121827;
+    --color-surface-2: #192235;
+    --color-border: #2c3854;
+    --color-text: #eef4ff;
+    --color-muted: #9aa8bd;
+    --color-accent: #14b8a6;
+    --color-accent-strong: #0f766e;
+    --color-danger: #ef4444;
+    --color-warning: #f59e0b;
+    --color-success: #22c55e;
+    --color-focus: rgba(20, 184, 166, 0.22);
+    --radius-sm: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --shadow-lg: 0 24px 70px rgba(0, 0, 0, 0.28);
+}
+
+[data-theme="light"] {
+    color-scheme: light;
+    --color-bg: #f7fafc;
+    --color-surface: #ffffff;
+    --color-surface-2: #eef4f7;
+    --color-border: #d8e2ea;
+    --color-text: #101828;
+    --color-muted: #526173;
+    --color-focus: rgba(13, 148, 136, 0.2);
+}
+
 * {
-    margin: 0%;
-    padding: 0%;
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
 }
 
 html,
 body,
 #root {
+    min-height: 100%;
     width: 100%;
-    background-color: #161616;
-    color: whitesmoke;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-.highlight{
-    color: #d20d3b;
+body {
+    overflow-x: hidden;
+}
+
+button,
+input,
+textarea {
+    font: inherit;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+a {
+    color: inherit;
+}
+
+.highlight {
+    color: var(--color-accent);
+}
+
+.app-shell {
+    min-height: 100vh;
+    width: 100%;
+    padding: var(--space-5);
+}
+
+.app-shell--center {
+    display: grid;
+    place-items: center;
+}
+
+.skeleton-card {
+    width: min(100%, 28rem);
+    height: 12rem;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(90deg, var(--color-surface), var(--color-surface-2), var(--color-surface));
+    background-size: 220% 100%;
+    animation: shimmer 1.4s infinite;
+    border: 1px solid var(--color-border);
+}
+
+.empty-state {
+    width: min(100%, 34rem);
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+
+    p {
+        color: var(--color-muted);
+        line-height: 1.6;
+    }
+}
+
+.toast {
+    position: fixed;
+    right: var(--space-5);
+    bottom: var(--space-5);
+    z-index: 50;
+    max-width: min(24rem, calc(100vw - 2rem));
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-lg);
+    color: var(--color-text);
+}
+
+.toast--success {
+    border-color: rgba(34, 197, 94, 0.5);
+}
+
+.toast--error {
+    border-color: rgba(239, 68, 68, 0.5);
+}
+
+@keyframes shimmer {
+    from {
+        background-position: 200% 0;
+    }
+
+    to {
+        background-position: -200% 0;
+    }
 }

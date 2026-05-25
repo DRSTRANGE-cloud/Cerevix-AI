@@ -1,20 +1,42 @@
-.button{
-
-    border: none;
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    border: 1px solid transparent;
     outline: none;
-    padding-inline: 1.5rem;
-    padding-block: 0.75rem;
-    border-radius: 1rem;
+    padding: 0.72rem 1rem;
+    border-radius: var(--radius-sm);
     cursor: pointer;
+    text-decoration: none;
+    font-weight: 800;
+    transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 
-    transition: all 0.3s ease-in-out;
-
-    &.primary-button{
-        background-color: #e1034d;
-        color: white;
+    &:focus-visible {
+        box-shadow: 0 0 0 3px var(--color-focus);
     }
 
-    &:active{
-        transform: scale(0.9);
+    &.primary-button {
+        background-color: var(--color-accent);
+        color: #042f2e;
+
+        &:hover {
+            background-color: #2dd4bf;
+        }
+    }
+
+    &.ghost-button {
+        background: transparent;
+        color: var(--color-text);
+        border-color: var(--color-border);
+
+        &:hover {
+            border-color: var(--color-accent);
+            color: var(--color-accent);
+        }
+    }
+
+    &:active {
+        transform: translateY(1px);
     }
 }

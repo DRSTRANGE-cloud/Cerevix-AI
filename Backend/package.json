@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx nodemon server.js"
+    "start": "node server.js",
+    "test": "node test/run-tests.js",
+    "dev": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
@@ -17,12 +18,18 @@
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "helmet": "^8.2.0",
     "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.2.1",
+    "mongodb": "^7.2.0",
+    "mongoose": "^9.6.2",
     "multer": "^2.0.2",
     "pdf-parse": "^2.4.5",
     "puppeteer": "^24.37.5",
     "zod": "^3.25.76",
     "zod-to-json-schema": "^3.25.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
