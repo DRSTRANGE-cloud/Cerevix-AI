@@ -1,4 +1,11 @@
-import { getAllInterviewReports, generateInterviewReport, getInterviewReportById, generateResumePdf } from "../services/interview.api"
+import {
+    clearInterviewReports,
+    deleteInterviewReport,
+    getAllInterviewReports,
+    generateInterviewReport,
+    getInterviewReportById,
+    generateResumePdf
+} from "../services/interview.api"
 import { useCallback, useContext } from "react"
 import { InterviewContext } from "../interview.context-value"
 
@@ -68,6 +75,16 @@ export const useInterview = () => {
         }
     }, [ setLoading ])
 
-    return { loading, report, reports, generateReport, getReportById, getReports, getResumePdf }
+    const removeReport = useCallback(async (interviewId) => {
+        await deleteInterviewReport(interviewId)
+        setReports((items) => items.filter((item) => item._id !== interviewId))
+    }, [ setReports ])
+
+    const clearReports = useCallback(async () => {
+        await clearInterviewReports()
+        setReports([])
+    }, [ setReports ])
+
+    return { loading, report, reports, generateReport, getReportById, getReports, getResumePdf, removeReport, clearReports }
 
 }

@@ -39,6 +39,13 @@ interviewRouter.get(
     asyncHandler(interviewController.getInterviewReportByIdController)
 )
 
+interviewRouter.delete(
+    "/report/:interviewId",
+    asyncHandler(authMiddleware.authUser),
+    validateParams(interviewIdParamsSchema),
+    asyncHandler(interviewController.deleteInterviewReportController)
+)
+
 
 /**
  * @route GET /api/interview/
@@ -46,6 +53,8 @@ interviewRouter.get(
  * @access private
  */
 interviewRouter.get("/", asyncHandler(authMiddleware.authUser), asyncHandler(interviewController.getAllInterviewReportsController))
+
+interviewRouter.delete("/", asyncHandler(authMiddleware.authUser), asyncHandler(interviewController.clearInterviewReportsController))
 
 
 /**

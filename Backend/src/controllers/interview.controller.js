@@ -78,6 +78,29 @@ async function getAllInterviewReportsController(req, res) {
     })
 }
 
+async function deleteInterviewReportController(req, res) {
+    const { interviewId } = req.params
+    const interviewReport = await interviewReportModel.findOneAndDelete({ _id: interviewId, user: req.user.id })
+
+    if (!interviewReport) {
+        return res.status(404).json({
+            message: "Interview report not found."
+        })
+    }
+
+    res.status(200).json({
+        message: "Interview report deleted successfully."
+    })
+}
+
+async function clearInterviewReportsController(req, res) {
+    await interviewReportModel.deleteMany({ user: req.user.id })
+
+    res.status(200).json({
+        message: "Interview report history cleared successfully."
+    })
+}
+
 
 /**
  * @description Controller to generate resume PDF based on user self description, resume and job description.
@@ -113,4 +136,11 @@ async function generateResumePdfController(req, res) {
     }
 }
 
-module.exports = { generateInterViewReportController, getInterviewReportByIdController, getAllInterviewReportsController, generateResumePdfController }
+module.exports = {
+    generateInterViewReportController,
+    getInterviewReportByIdController,
+    getAllInterviewReportsController,
+    deleteInterviewReportController,
+    clearInterviewReportsController,
+    generateResumePdfController
+}

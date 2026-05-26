@@ -21,11 +21,6 @@ const containerVariants = {
     }
 }
 
-const itemVariants = {
-    hidden: { opacity: 0, y: 8 },
-    show: { opacity: 1, y: 0 }
-}
-
 const QuestionCard = ({ item, index }) => {
     const [ open, setOpen ] = useState(false)
 

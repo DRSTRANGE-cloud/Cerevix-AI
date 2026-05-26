@@ -13,6 +13,7 @@ const Login = () => {
     const { showToast } = useToast()
     const navigate = useNavigate()
     const [ serverError, setServerError ] = useState("")
+    const [ showPassword, setShowPassword ] = useState(false)
     const {
         register,
         handleSubmit,
@@ -56,7 +57,7 @@ const Login = () => {
         <main className="auth-page">
             <section className="form-container" aria-labelledby="login-title">
                 <div className="auth-copy">
-                    <p>Cerevix AI</p>
+                    <img src='/cerevix-logo.png' alt='Cerevix AI' className='auth-logo' />
                     <h1 id="login-title">Log in</h1>
                     <span>Continue building interview plans tailored to your resume and target roles.</span>
                 </div>
@@ -77,15 +78,26 @@ const Login = () => {
                     </FormField>
 
                     <FormField id="password" label="Password" error={errors.password?.message}>
-                        <input
-                            {...register("password")}
-                            aria-invalid={Boolean(errors.password)}
-                            aria-describedby={errors.password ? "password-error" : undefined}
-                            autoComplete="current-password"
-                            type="password"
-                            id="password"
-                            placeholder="Enter your password"
-                        />
+                        <div className="password-control">
+                            <input
+                                {...register("password")}
+                                aria-invalid={Boolean(errors.password)}
+                                aria-describedby={errors.password ? "password-error" : undefined}
+                                autoComplete="current-password"
+                                type={showPassword ? "text" : "password"}
+                                id="password"
+                                placeholder="Enter your password"
+                            />
+                            <button
+                                type="button"
+                                className="password-toggle"
+                                onClick={() => setShowPassword((value) => !value)}
+                                aria-label={showPassword ? "Hide password" : "Show password"}
+                                aria-pressed={showPassword}
+                            >
+                                {showPassword ? "Hide" : "Show"}
+                            </button>
+                        </div>
                     </FormField>
 
                     <button className='button primary-button' disabled={!isValid || isBusy}>

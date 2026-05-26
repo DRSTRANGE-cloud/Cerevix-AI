@@ -35,7 +35,6 @@ export default function Dashboard() {
     return (
         <main className="dashboard-page">
             <header className="feature-header">
-                <p className="eyebrow">Cerevix AI</p>
                 <h1>Career Analytics Dashboard</h1>
                 <span>Track resume fit, interview readiness, weak skills, and recent preparation activity.</span>
             </header>

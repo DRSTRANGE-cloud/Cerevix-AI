@@ -10,7 +10,10 @@ import "../style.scss"
 
 const atsSchema = z.object({
     jobDescription: z.string().trim().min(40, "Paste a fuller job description."),
-    resume: z.any().refine((files) => files?.length === 1, "Upload a resume PDF.")
+    resume: z.any()
+        .refine((files) => files?.length === 1, "Upload a resume PDF.")
+        .refine((files) => files?.[0]?.type === "application/pdf", "Resume upload must be a PDF file.")
+        .refine((files) => !files?.[0] || files[0].size <= 3 * 1024 * 1024, "Resume PDF must be 3MB or smaller.")
 })
 
 function ScoreCard({ analysis }) {
@@ -73,10 +76,13 @@ export default function ATS() {
     const [ analysis, setAnalysis ] = useState(null)
     const [ history, setHistory ] = useState([])
     const [ loading, setLoading ] = useState(false)
-    const { register, handleSubmit, formState: { errors, isValid } } = useForm({
+    const { register, watch, handleSubmit, formState: { errors, isValid } } = useForm({
         resolver: zodResolver(atsSchema),
         mode: "onChange"
     })
+    const resumeFiles = watch("resume")
+    const resumeName = resumeFiles?.[0]?.name
+    const resumeField = register("resume")
 
     useEffect(() => {
         getAtsAnalyses()
@@ -105,15 +111,24 @@ export default function ATS() {
     return (
         <main className="feature-page">
             <header className="feature-header">
-                <p className="eyebrow">Cerevix AI</p>
                 <h1>ATS Resume Intelligence</h1>
                 <span>Measure resume fit, uncover missing keywords, and get AI-backed optimization guidance.</span>
             </header>
 
             <form className="feature-card ats-form" onSubmit={handleSubmit(onSubmit)} noValidate>
-                <label>
-                    Resume PDF
-                    <input type="file" accept="application/pdf,.pdf" {...register("resume")} />
+                <label className="ats-upload-field" htmlFor="ats-resume">
+                    <span className="section-label">
+                        Resume PDF
+                        <span className="badge badge--best">Required</span>
+                    </span>
+                    <span className={`dropzone ats-dropzone ${resumeName ? "dropzone--selected" : ""}`}>
+                        <span className="dropzone__icon" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 16 12 12 8 16" /><line x1="12" y1="12" x2="12" y2="21" /><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" /></svg>
+                        </span>
+                        <span className="dropzone__title">{resumeName ? "Resume ready" : "Click to upload or drag & drop"}</span>
+                        <span className="dropzone__subtitle">{resumeName || "PDF only (Max 3MB)"}</span>
+                    </span>
+                    <input hidden id="ats-resume" type="file" accept="application/pdf,.pdf" {...resumeField} />
                     {errors.resume && <span className="field-error">{errors.resume.message}</span>}
                 </label>
                 <label>

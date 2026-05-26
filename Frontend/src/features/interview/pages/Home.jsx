@@ -2,13 +2,11 @@ import { useEffect, useState } from 'react'
 import "../style/home.scss"
 import { useInterview } from '../hooks/useInterview.js'
 import { Link, useNavigate } from 'react-router'
-import { useAuth } from '../../auth/hooks/useAuth.js'
 import { useToast } from '../../../components/toast.context.js'
 
 const Home = () => {
 
-    const { loading, generateReport, reports, getReports } = useInterview()
-    const { user, handleLogout } = useAuth()
+    const { loading, generateReport, reports, getReports, removeReport, clearReports } = useInterview()
     const { showToast } = useToast()
     const [ jobDescription, setJobDescription ] = useState("")
     const [ selfDescription, setSelfDescription ] = useState("")
@@ -70,11 +68,29 @@ const Home = () => {
         setResumeFile(file)
     }
 
-    const logout = async () => {
+    const handleRemoveReport = async (event, reportId) => {
+        event.stopPropagation()
+
+        if (!window.confirm("Remove this interview plan from your history?")) {
+            return
+        }
+
         try {
-            await handleLogout()
-            showToast("Logged out.", "success")
-            navigate("/login")
+            await removeReport(reportId)
+            showToast("Interview plan removed.", "success")
+        } catch (error) {
+            showToast(error.message, "error")
+        }
+    }
+
+    const handleClearReports = async () => {
+        if (!window.confirm("Clear all recent interview plans? This cannot be undone.")) {
+            return
+        }
+
+        try {
+            await clearReports()
+            showToast("Interview plan history cleared.", "success")
         } catch (error) {
             showToast(error.message, "error")
         }
@@ -90,19 +106,6 @@ const Home = () => {
 
     return (
         <div className='home-page'>
-            <nav className="top-nav" aria-label="Primary navigation">
-                <div>
-                    <strong>Cerevix AI</strong>
-                    <span>{user?.username}</span>
-                </div>
-                <div className="top-nav__links">
-                    <Link to="/dashboard">Dashboard</Link>
-                    <Link to="/ats">ATS Engine</Link>
-                    <Link to="/mock-interview">Mock Interview</Link>
-                </div>
-                <button className="button ghost-button" onClick={logout}>Logout</button>
-            </nav>
-
             {/* Page Header */}
             <header className='page-header'>
                 <h1>Create Your Custom <span className='highlight'>Interview Plan</span></h1>
@@ -204,11 +207,17 @@ const Home = () => {
             {/* Recent Reports List */}
             {reports.length > 0 && (
                 <section className='recent-reports'>
-                    <h2>My Recent Interview Plans</h2>
+                    <div className="recent-reports__header">
+                        <h2>My Recent Interview Plans</h2>
+                        <button className="button ghost-button" onClick={handleClearReports}>Clear history</button>
+                    </div>
                     <ul className='reports-list'>
                         {reports.map(report => (
-                            <li key={report._id} className='report-item' onClick={() => navigate(`/interview/${report._id}`)}>
-                                <h3>{report.title || 'Untitled Position'}</h3>
+                            <li key={report._id} className='report-item' onClick={() => navigate(`/interview/${report._id}`)} tabIndex={0}>
+                                <div className="report-item__top">
+                                    <h3>{report.title || 'Untitled Position'}</h3>
+                                    <button aria-label={`Remove ${report.title || "interview plan"}`} onClick={(event) => handleRemoveReport(event, report._id)}>Remove</button>
+                                </div>
                                 <p className='report-meta'>Generated on {new Date(report.createdAt).toLocaleDateString()}</p>
                                 <p className={`match-score ${report.matchScore >= 80 ? 'score--high' : report.matchScore >= 60 ? 'score--mid' : 'score--low'}`}>Match Score: {report.matchScore}%</p>
                             </li>

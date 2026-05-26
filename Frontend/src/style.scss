@@ -87,6 +87,19 @@ a {
     place-items: center;
 }
 
+.app-layout {
+    min-height: 100vh;
+    background: var(--color-bg);
+    display: flex;
+    flex-direction: column;
+}
+
+.page-transition {
+    flex: 1;
+    min-width: 0;
+    will-change: opacity, transform, filter;
+}
+
 .skeleton-card {
     width: min(100%, 28rem);
     height: 12rem;
@@ -143,5 +156,126 @@ a {
 
     to {
         background-position: -200% 0;
+    }
+}
+
+/* Global form field enhancements */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="number"],
+textarea,
+select {
+    transition: all 0.3s ease;
+    font-size: 1rem;
+
+    &:focus {
+        box-shadow: 0 0 0 3px var(--color-focus);
+    }
+
+    &::placeholder {
+        color: var(--color-muted);
+    }
+}
+
+/* Smooth page transitions */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Utility classes */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Focus visible styling for better accessibility */
+:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+/* Smooth scroll behavior */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Better text rendering */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* Responsive typography base improvements */
+@media (max-width: 768px) {
+    html {
+        font-size: 15px;
+    }
+
+    .app-shell {
+        padding: var(--space-3);
+    }
+}
+
+@media (max-width: 480px) {
+    html {
+        font-size: 14px;
+    }
+
+    .app-shell {
+        padding: var(--space-2);
+    }
+
+    button {
+        min-width: auto;
     }
 }

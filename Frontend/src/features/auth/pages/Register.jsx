@@ -13,6 +13,8 @@ const Register = () => {
     const { showToast } = useToast()
     const navigate = useNavigate()
     const [ serverError, setServerError ] = useState("")
+    const [ showPassword, setShowPassword ] = useState(false)
+    const [ showConfirmPassword, setShowConfirmPassword ] = useState(false)
     const {
         register,
         control,
@@ -62,7 +64,7 @@ const Register = () => {
         <main className="auth-page">
             <section className="form-container" aria-labelledby="register-title">
                 <div className="auth-copy">
-                    <p>Cerevix AI</p>
+                    <img src='/cerevix-logo.png' alt='Cerevix AI' className='auth-logo' />
                     <h1 id="register-title">Create account</h1>
                     <span>Generate focused interview preparation plans from your resume and job targets.</span>
                 </div>
@@ -95,15 +97,26 @@ const Register = () => {
                     </FormField>
 
                     <FormField id="password" label="Password" error={errors.password?.message}>
-                        <input
-                            {...register("password")}
-                            aria-invalid={Boolean(errors.password)}
-                            aria-describedby={errors.password ? "password-error password-strength" : "password-strength"}
-                            autoComplete="new-password"
-                            type="password"
-                            id="password"
-                            placeholder="Create a strong password"
-                        />
+                        <div className="password-control">
+                            <input
+                                {...register("password")}
+                                aria-invalid={Boolean(errors.password)}
+                                aria-describedby={errors.password ? "password-error password-strength" : "password-strength"}
+                                autoComplete="new-password"
+                                type={showPassword ? "text" : "password"}
+                                id="password"
+                                placeholder="Create a strong password"
+                            />
+                            <button
+                                type="button"
+                                className="password-toggle"
+                                onClick={() => setShowPassword((value) => !value)}
+                                aria-label={showPassword ? "Hide password" : "Show password"}
+                                aria-pressed={showPassword}
+                            >
+                                {showPassword ? "Hide" : "Show"}
+                            </button>
+                        </div>
                         <div className={`password-strength password-strength--${passwordStrength.tone}`} id="password-strength">
                             <span style={{ width: `${passwordStrength.value * 20}%` }} />
                             <p>{passwordStrength.label}</p>
@@ -111,15 +124,26 @@ const Register = () => {
                     </FormField>
 
                     <FormField id="confirmPassword" label="Confirm password" error={errors.confirmPassword?.message}>
-                        <input
-                            {...register("confirmPassword")}
-                            aria-invalid={Boolean(errors.confirmPassword)}
-                            aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
-                            autoComplete="new-password"
-                            type="password"
-                            id="confirmPassword"
-                            placeholder="Repeat your password"
-                        />
+                        <div className="password-control">
+                            <input
+                                {...register("confirmPassword")}
+                                aria-invalid={Boolean(errors.confirmPassword)}
+                                aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
+                                autoComplete="new-password"
+                                type={showConfirmPassword ? "text" : "password"}
+                                id="confirmPassword"
+                                placeholder="Repeat your password"
+                            />
+                            <button
+                                type="button"
+                                className="password-toggle"
+                                onClick={() => setShowConfirmPassword((value) => !value)}
+                                aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                                aria-pressed={showConfirmPassword}
+                            >
+                                {showConfirmPassword ? "Hide" : "Show"}
+                            </button>
+                        </div>
                     </FormField>
 
                     <button className='button primary-button' disabled={!isValid || isBusy}>

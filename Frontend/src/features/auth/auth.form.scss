@@ -51,6 +51,14 @@
     }
 }
 
+.auth-logo {
+    width: clamp(9rem, 42vw, 13rem);
+    height: auto;
+    max-height: 5rem;
+    object-fit: contain;
+    margin-bottom: var(--space-1);
+}
+
 .input-group {
     display: flex;
     flex-direction: column;
@@ -81,6 +89,39 @@
         &[aria-invalid="true"] {
             border-color: var(--color-danger);
         }
+    }
+}
+
+.password-control {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    input {
+        padding-right: 4.7rem;
+    }
+}
+
+.password-toggle {
+    position: absolute;
+    right: 0.45rem;
+    min-width: 3.7rem;
+    min-height: 2rem;
+    padding: 0.35rem 0.55rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    background: rgba(20, 184, 166, 0.1);
+    color: var(--color-accent);
+    font-size: 0.8rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+
+    &:hover,
+    &:focus-visible {
+        border-color: rgba(20, 184, 166, 0.35);
+        background: rgba(20, 184, 166, 0.16);
+        outline: none;
     }
 }
 

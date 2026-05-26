@@ -1,7 +1,21 @@
 @use "../ats/style.scss";
 
+.dashboard-page {
+    padding-top: clamp(1.25rem, 3vw, 2.25rem);
+    align-items: center;
+
+    .feature-header,
+    .overview-grid,
+    .dashboard-grid {
+        width: min(100%, 1280px);
+    }
+
+    .feature-header h1 {
+        font-size: clamp(2rem, 5vw, 3.4rem);
+    }
+}
+
 .overview-grid {
-    width: min(100%, 1180px);
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--space-4);
@@ -23,7 +37,6 @@
 }
 
 .dashboard-grid {
-    width: min(100%, 1180px);
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-4);
@@ -56,16 +69,105 @@
     }
 }
 
-@media (max-width: 980px) {
+@media (max-width: 1200px) {
     .overview-grid,
     .dashboard-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
+    .overview-card strong {
+        font-size: clamp(1.5rem, 4vw, 2rem);
+    }
 }
 
-@media (max-width: 640px) {
-    .overview-grid,
+@media (max-width: 768px) {
+    .overview-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--space-3);
+    }
+
     .dashboard-grid {
         grid-template-columns: 1fr;
+        gap: var(--space-3);
+    }
+
+    .overview-card {
+        gap: var(--space-1);
+
+        span {
+            font-size: 0.85rem;
+        }
+
+        strong {
+            font-size: clamp(1.25rem, 3vw, 1.75rem);
+        }
+    }
+
+    .chart-card {
+        gap: var(--space-3);
+    }
+
+    .timeline-list {
+        gap: var(--space-2);
+
+        div {
+            padding-bottom: var(--space-2);
+            gap: 0;
+        }
+
+        strong {
+            font-size: 0.95rem;
+        }
+
+        span {
+            font-size: 0.85rem;
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .overview-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-2);
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-2);
+    }
+
+    .overview-card {
+        gap: var(--space-1);
+        padding: var(--space-2);
+
+        span {
+            font-size: 0.8rem;
+        }
+
+        strong {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+        }
+    }
+
+    .chart-card {
+        gap: var(--space-2);
+        padding: var(--space-2);
+    }
+
+    .timeline-list {
+        gap: var(--space-1);
+
+        div {
+            gap: 0;
+            padding-bottom: var(--space-2);
+        }
+
+        strong {
+            font-size: 0.9rem;
+        }
+
+        span {
+            font-size: 0.8rem;
+        }
     }
 }
