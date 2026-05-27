@@ -241,7 +241,7 @@ export default function MockInterview() {
                         </div>
 
                         <div className="session-info">
-                            <p className="eyebrow">Current Session</p>
+                            <p className="section-kicker">Current Session</p>
                             <h3>{session.role}</h3>
                             <div className="session-tags">
                                 <span className="tag">{session.difficulty}</span>
@@ -250,7 +250,7 @@ export default function MockInterview() {
                         </div>
 
                         <div className="progress-tracker">
-                            <p className="eyebrow">Progress</p>
+                            <p className="section-kicker">Progress</p>
                             <div className="progress-bar">
                                 <Motion.div 
                                     className="progress-fill"
@@ -343,7 +343,7 @@ function FinalReport({ report }) {
             transition={{ duration: 0.5 }}
         >
             <div className="report-header">
-                <p className="eyebrow">Final Report</p>
+                <p className="section-kicker">Final Report</p>
                 <h2>Interview Complete</h2>
             </div>
 

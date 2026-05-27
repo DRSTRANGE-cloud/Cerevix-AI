@@ -3,6 +3,7 @@ const atsModel = require("./ats.model")
 const { ApiError } = require("../../utils/http")
 const { generateAtsInsights } = require("../../services/ai.service")
 const { analyzeKeywordMatch } = require("./ats.service")
+const { refreshUserBehaviorAnalysis } = require("../behavior/behavior.service")
 
 async function createAtsAnalysis(req, res) {
     const { jobDescription } = req.body
@@ -21,6 +22,7 @@ async function createAtsAnalysis(req, res) {
         ...metrics,
         ...insights
     })
+    await refreshUserBehaviorAnalysis(req.user.id)
 
     res.status(201).json({
         message: "ATS analysis generated successfully.",
@@ -37,4 +39,18 @@ async function getAtsAnalyses(req, res) {
     })
 }
 
-module.exports = { createAtsAnalysis, getAtsAnalyses }
+async function deleteAtsAnalysis(req, res) {
+    const { analysisId } = req.params
+    const analysis = await atsModel.findOneAndDelete({ _id: analysisId, user: req.user.id })
+
+    if (!analysis) {
+        throw new ApiError(404, "ATS analysis not found.")
+    }
+
+    res.status(200).json({
+        message: "ATS analysis removed successfully.",
+        analysisId
+    })
+}
+
+module.exports = { createAtsAnalysis, getAtsAnalyses, deleteAtsAnalysis }

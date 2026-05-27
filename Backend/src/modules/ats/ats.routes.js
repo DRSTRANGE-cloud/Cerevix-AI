@@ -18,4 +18,6 @@ atsRouter.post(
 
 atsRouter.get("/", asyncHandler(authMiddleware.authUser), asyncHandler(atsController.getAtsAnalyses))
 
+atsRouter.delete("/:analysisId", asyncHandler(authMiddleware.authUser), asyncHandler(atsController.deleteAtsAnalysis))
+
 module.exports = atsRouter

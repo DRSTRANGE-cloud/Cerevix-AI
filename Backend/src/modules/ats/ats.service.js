@@ -1,6 +1,13 @@
 const COMMON_WORDS = new Set([
     "and", "the", "for", "with", "that", "this", "from", "you", "your", "will", "are", "our",
-    "have", "has", "job", "role", "work", "team", "using", "about", "into", "their", "they"
+    "have", "has", "job", "role", "work", "team", "using", "about", "into", "their", "they",
+    "experience", "experienced", "years", "year", "strong", "skills", "skill", "engineering", "engineer",
+    "development", "developer", "software", "technology", "technologies", "position", "candidate",
+    "responsible", "including", "required", "requirements", "ability", "able", "need", "system",
+    "systems", "business", "product", "products", "service", "services", "senior", "mid",
+    "junior", "looking", "target", "state", "care", "support", "apply", "working", "work",
+    "team", "building", "build", "manage", "management", "leading", "lead", "hands", "day",
+    "days", "projects", "project", "implement", "implemented", "maintain", "maintenance"
 ])
 
 function normalizeWords(text) {

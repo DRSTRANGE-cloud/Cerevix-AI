@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts"
 import { z } from "zod"
 import { useToast } from "../../../components/toast.context"
-import { createAtsAnalysis, getAtsAnalyses } from "../services/ats.api"
+import { createAtsAnalysis, deleteAtsAnalysis, getAtsAnalyses } from "../services/ats.api"
 import "../style.scss"
 
 const atsSchema = z.object({
@@ -25,7 +25,7 @@ function ScoreCard({ analysis }) {
     return (
         <Motion.section className="feature-card ats-score-card" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
             <div>
-                <p className="eyebrow">ATS Score</p>
+                <p className="section-kicker">ATS Score</p>
                 <h2>{analysis.atsScore}</h2>
                 <span>{analysis.keywordMatch}% keyword match</span>
             </div>
@@ -45,7 +45,7 @@ function ScoreCard({ analysis }) {
 function SkillGapPanel({ analysis }) {
     return (
         <section className="feature-card">
-            <p className="eyebrow">Skill Fit</p>
+            <p className="section-kicker">Skill Fit</p>
             <div className="skill-columns">
                 <div>
                     <h3>Matched</h3>
@@ -63,7 +63,7 @@ function SkillGapPanel({ analysis }) {
 function SuggestionList({ title, items }) {
     return (
         <section className="feature-card">
-            <p className="eyebrow">{title}</p>
+            <p className="section-kicker">{title}</p>
             <ul className="insight-list">
                 {items.map((item) => <li key={item}>{item}</li>)}
             </ul>
@@ -87,11 +87,33 @@ export default function ATS() {
     useEffect(() => {
         getAtsAnalyses()
             .then((data) => {
-                setHistory(data.analyses)
-                setAnalysis(data.analyses[0] || null)
+                setHistory(data.analyses || [])
+                setAnalysis(data.analyses?.[0] || null)
             })
             .catch((error) => showToast(error.message, "error"))
     }, [ showToast ])
+
+    const handleSelectAnalysis = (selectedAnalysis) => {
+        setAnalysis(selectedAnalysis)
+    }
+
+    const handleDeleteAnalysis = async (analysisId) => {
+        setLoading(true)
+
+        try {
+            await deleteAtsAnalysis(analysisId)
+            const updatedHistory = history.filter((item) => item._id !== analysisId)
+            setHistory(updatedHistory)
+            if (analysis?._id === analysisId) {
+                setAnalysis(updatedHistory[0] || null)
+            }
+            showToast("Analysis deleted.", "success")
+        } catch (error) {
+            showToast(error.message, "error")
+        } finally {
+            setLoading(false)
+        }
+    }
 
     const onSubmit = async ({ jobDescription, resume }) => {
         setLoading(true)
@@ -99,7 +121,7 @@ export default function ATS() {
         try {
             const data = await createAtsAnalysis({ jobDescription, resumeFile: resume[0] })
             setAnalysis(data.analysis)
-            setHistory((items) => [ data.analysis, ...items ])
+            setHistory((current) => [data.analysis, ...current.filter((item) => item._id !== data.analysis._id)])
             showToast("ATS analysis generated.", "success")
         } catch (error) {
             showToast(error.message, "error")
@@ -139,6 +161,34 @@ export default function ATS() {
                 <button className="button primary-button" disabled={!isValid || loading}>{loading ? "Analyzing..." : "Run ATS Analysis"}</button>
             </form>
 
+            {history.length > 0 && (
+                <section className="feature-card analysis-history">
+                    <p className="section-kicker">Analysis History</p>
+                    <div className="history-list">
+                        {history.map((item) => (
+                            <div key={item._id} className={`history-item ${analysis?._id === item._id ? "history-item--active" : ""}`}>
+                                <button
+                                    type="button"
+                                    className="history-item__button"
+                                    onClick={() => handleSelectAnalysis(item)}
+                                >
+                                    <strong>{item.atsScore}%</strong>
+                                    <span>{new Date(item.createdAt).toLocaleString()}</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    className="button ghost-button history-delete"
+                                    onClick={() => handleDeleteAnalysis(item._id)}
+                                    disabled={loading}
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
+
             {analysis ? (
                 <div className="feature-grid">
                     <ScoreCard analysis={analysis} />
@@ -150,20 +200,6 @@ export default function ATS() {
                 </div>
             ) : (
                 <section className="empty-state"><h2>No ATS analysis yet</h2><p>Upload a resume and job description to generate your first analysis.</p></section>
-            )}
-
-            {history.length > 1 && (
-                <section className="feature-card">
-                    <p className="eyebrow">Recent ATS Runs</p>
-                    <div className="history-list">
-                        {history.slice(0, 5).map((item) => (
-                            <button key={item._id} onClick={() => setAnalysis(item)}>
-                                <strong>{item.atsScore}</strong>
-                                <span>{new Date(item.createdAt).toLocaleDateString()}</span>
-                            </button>
-                        ))}
-                    </div>
-                </section>
             )}
         </main>
     )

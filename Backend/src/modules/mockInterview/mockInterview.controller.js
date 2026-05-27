@@ -5,6 +5,7 @@ const {
     generateMockFinalReport,
     generateMockQuestion
 } = require("../../services/ai.service")
+const { refreshUserBehaviorAnalysis } = require("../behavior/behavior.service")
 
 const MAX_QUESTIONS = 5
 
@@ -82,6 +83,10 @@ async function submitAnswer(req, res) {
 
     await session.save()
 
+    if (session.status === "completed") {
+        await refreshUserBehaviorAnalysis(req.user.id)
+    }
+
     res.status(200).json({
         message: session.status === "completed" ? "Mock interview completed." : "Answer submitted.",
         session
@@ -100,6 +105,7 @@ async function finishMockInterview(req, res) {
         session.finalReport = await generateMockFinalReport(session)
         session.status = "completed"
         await session.save()
+        await refreshUserBehaviorAnalysis(req.user.id)
     }
 
     res.status(200).json({

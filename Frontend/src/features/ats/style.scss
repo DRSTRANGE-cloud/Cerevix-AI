@@ -1,6 +1,8 @@
 /* ============================================================
    ATS PAGE — UPGRADED CSS
    Design: Dark premium, editorial layout, refined spacing
+   All sections share a consistent 760px content width.
+   Feature grid expands to 1160px for two-column results.
    ============================================================ */
 
 /* ----- Page Shell ----- */
@@ -12,11 +14,11 @@
     padding: clamp(2rem, 4vw, 3.5rem) clamp(1.25rem, 4vw, 3rem);
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: center;               /* centres ALL direct children */
     gap: var(--space-6, 2.5rem);
     background:
         radial-gradient(ellipse 80% 40% at 50% -10%, rgba(20, 184, 166, 0.18), transparent),
-        radial-gradient(ellipse 50% 60% at 90% 80%, rgba(99, 102, 241, 0.08), transparent),
+        radial-gradient(ellipse 50% 60% at 90% 80%,  rgba(99, 102, 241, 0.08), transparent),
         var(--color-bg);
 }
 
@@ -55,10 +57,17 @@
     margin-inline: auto;
 }
 
-.eyebrow {
+.section-kicker {
     display: inline-flex;
     align-items: center;
-    gap: 0.4em;
+    width: max-content;
+    gap: 0.5rem;
+    padding: 0.28rem 0.6rem;
+    border: 1px solid rgba(20, 184, 166, 0.22);
+    border-radius: 999px;
+    background:
+        linear-gradient(135deg, rgba(20, 184, 166, 0.11), rgba(59, 130, 246, 0.05)),
+        rgba(255, 255, 255, 0.02);
     color: var(--color-accent, #14b8a6);
     font-size: 0.72rem;
     font-weight: 900;
@@ -67,12 +76,11 @@
 
     &::before {
         content: '';
-        display: inline-block;
-        width: 1.6em;
-        height: 2px;
+        width: 0.42rem;
+        height: 0.42rem;
         background: currentColor;
-        border-radius: 2px;
-        opacity: 0.7;
+        border-radius: 999px;
+        box-shadow: 0 0 0 0.24rem rgba(20, 184, 166, 0.12);
     }
 }
 
@@ -94,7 +102,7 @@
 
 /* ----- ATS Form ----- */
 .ats-form {
-    width: min(100%, 1160px);
+    width: min(100%, 760px);           /* matches header width */
     display: grid;
     gap: var(--space-5, 1.75rem);
     background: var(--color-surface);
@@ -112,34 +120,6 @@
         font-size: 0.88rem;
         letter-spacing: 0.01em;
         color: var(--color-text);
-    }
-
-    .ats-form textarea {
-        min-height: 11rem;
-        resize: vertical;
-        line-height: 1.65;
-
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: var(--color-accent) transparent;
-
-        &::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        &::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        &::-webkit-scrollbar-thumb {
-            background: rgba(20, 184, 166, 0.5);
-            border-radius: 999px;
-            transition: 0.2s ease;
-        }
-
-        &::-webkit-scrollbar-thumb:hover {
-            background: rgba(20, 184, 166, 0.8);
-        }
     }
 
     input,
@@ -169,20 +149,6 @@
             border-color: var(--color-accent, #14b8a6);
             box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
             background: rgba(20, 184, 166, 0.05);
-            overflow-y: auto;
-
-            &::-webkit-scrollbar {
-                width: 8px;
-            }
-
-            &::-webkit-scrollbar-thumb {
-                background: rgba(20, 184, 166, 0.5);
-                border-radius: 999px;
-            }
-
-            &::-webkit-scrollbar-track {
-                background: transparent;
-            }
         }
     }
 
@@ -190,11 +156,20 @@
         min-height: 11rem;
         resize: vertical;
         line-height: 1.65;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(20, 184, 166, 0.4) transparent;
+
+        &::-webkit-scrollbar       { width: 6px; }
+        &::-webkit-scrollbar-track { background: transparent; }
+        &::-webkit-scrollbar-thumb {
+            background: rgba(20, 184, 166, 0.4);
+            border-radius: 999px;
+            &:hover { background: rgba(20, 184, 166, 0.7); }
+        }
     }
 }
 
-
-/* Submit button — if it lives inside or beside the form */
+/* Submit button */
 .ats-form button[type="submit"],
 .btn-primary {
     width: 100%;
@@ -216,9 +191,7 @@
         box-shadow: 0 6px 28px rgba(20, 184, 166, 0.4);
     }
 
-    &:active {
-        transform: translateY(0);
-    }
+    &:active { transform: translateY(0); }
 }
 
 .field-error {
@@ -227,9 +200,8 @@
     margin-top: 0.2rem;
 }
 
-.ats-upload-field {
-    cursor: pointer;
-}
+/* ----- Upload / Dropzone ----- */
+.ats-upload-field { cursor: pointer; }
 
 .section-label {
     display: flex;
@@ -266,7 +238,7 @@
     border: 2px dashed var(--color-border);
     border-radius: var(--radius-md);
     text-align: center;
-    transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    transition: border-color 0.2s, background 0.2s, transform 0.18s;
 
     &:hover,
     &:focus-within {
@@ -307,13 +279,11 @@
     }
 }
 
-.ats-dropzone {
-    min-height: 11rem;
-}
+.ats-dropzone { min-height: 14rem; }
 
-/* ----- Feature Grid (results area) ----- */
+/* ----- Feature Grid (results) ----- */
 .feature-grid {
-    width: min(100%, 1160px);
+    width: min(100%, 1160px);          /* wider only for 2-col results */
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-4, 1.25rem);
@@ -373,10 +343,7 @@
     font-size: 0.8rem;
     font-weight: 700;
     transition: transform 0.12s;
-
-    &:hover {
-        transform: scale(1.04);
-    }
+    &:hover { transform: scale(1.04); }
 }
 
 .chip--good {
@@ -399,36 +366,90 @@
     line-height: 1.65;
     padding-left: 1.1rem;
 
-    li::marker {
-        color: var(--color-accent, #14b8a6);
-    }
+    li::marker { color: var(--color-accent, #14b8a6); }
 }
 
 /* ----- History List ----- */
+.analysis-history {
+    width: min(100%, 760px);
+}
+
 .history-list {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-3, 0.75rem);
+}
 
-    button {
-        min-width: 10rem;
-        display: grid;
-        gap: 0.25rem;
-        background: var(--color-surface-2, rgba(255, 255, 255, 0.04));
-        color: var(--color-text);
-        border: 1px solid var(--color-border);
-        border-radius: var(--radius-sm, 0.5rem);
-        padding: var(--space-3, 0.75rem);
-        cursor: pointer;
-        text-align: left;
-        transition: border-color 0.18s, background 0.18s, transform 0.14s;
-        font-size: 0.88rem;
+.history-item {
+    display: grid;
+    gap: 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm, 0.5rem);
+    background: var(--color-surface-2, rgba(255, 255, 255, 0.04));
+    padding: 0.75rem;
+    min-width: 12rem;
+    transition: border-color 0.18s, background 0.18s;
+}
 
-        &:hover {
-            border-color: rgba(20, 184, 166, 0.3);
-            background: rgba(20, 184, 166, 0.06);
-            transform: translateY(-1px);
-        }
+.history-item--active {
+    border-color: rgba(20, 184, 166, 0.35);
+    background: rgba(20, 184, 166, 0.08);
+}
+
+.history-item__button {
+    width: 100%;
+    display: grid;
+    gap: 0.2rem;
+    background: transparent;
+    border: none;
+    padding: 0;
+    text-align: left;
+    cursor: pointer;
+    color: var(--color-text);
+}
+
+.history-item__button strong {
+    display: block;
+    font-size: 1rem;
+    color: #fff;
+}
+
+.history-item__button span {
+    color: var(--color-muted);
+    font-size: 0.82rem;
+}
+
+.history-delete {
+    align-self: start;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid rgba(248, 113, 113, 0.25);
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.08);
+    font-size: 0.82rem;
+}
+
+.history-delete:hover {
+    background: rgba(248, 113, 113, 0.14);
+}
+
+.history-list button {
+    min-width: 10rem;
+    display: grid;
+    gap: 0.25rem;
+    background: var(--color-surface-2, rgba(255, 255, 255, 0.04));
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm, 0.5rem);
+    padding: var(--space-3, 0.75rem);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.18s, background 0.18s, transform 0.14s;
+    font-size: 0.88rem;
+
+    &:hover {
+        border-color: rgba(20, 184, 166, 0.3);
+        background: rgba(20, 184, 166, 0.06);
+        transform: translateY(-1px);
     }
 }
 
@@ -437,43 +458,21 @@
    ============================================================ */
 
 @media (max-width: 1200px) {
-    .feature-grid {
-        width: min(100%, 95vw);
-    }
-
-    .feature-header,
-    .ats-form {
-        width: min(100%, 680px);
-    }
+    .feature-grid { width: min(100%, 95vw); }
 }
 
 @media (max-width: 900px) {
-
     .feature-header,
-    .ats-form {
-        width: 100%;
-    }
-
-    .feature-grid {
-        width: 100%;
-    }
+    .ats-form,
+    .feature-grid { width: 100%; }
 }
 
 @media (max-width: 780px) {
-
     .feature-grid,
     .skill-columns,
-    .ats-score-card {
-        grid-template-columns: 1fr;
-    }
+    .ats-score-card { grid-template-columns: 1fr; }
 
-    .ats-form {
-        gap: var(--space-4, 1.25rem);
-
-        textarea {
-            min-height: 8rem;
-        }
-    }
+    .ats-form textarea  { min-height: 8rem; }
 
     .dropzone,
     .ats-dropzone {
@@ -481,14 +480,10 @@
         padding: var(--space-4, 1.25rem);
     }
 
-    .history-list button {
-        min-width: 8rem;
-        font-size: 0.85rem;
-    }
+    .history-list button { min-width: 8rem; font-size: 0.85rem; }
 }
 
 @media (max-width: 600px) {
-
     .feature-page,
     .mock-page,
     .dashboard-page {
@@ -497,51 +492,33 @@
     }
 
     .feature-header {
-        h1 {
-            font-size: clamp(1.6rem, 6vw, 2.4rem);
-        }
-
-        span {
-            font-size: 0.92rem;
-        }
+        h1   { font-size: clamp(1.6rem, 6vw, 2.4rem); }
+        span { font-size: 0.92rem; }
     }
 
     .ats-form {
         padding: var(--space-4, 1.25rem);
         gap: var(--space-3, 0.75rem);
 
-        label {
-            font-size: 0.84rem;
-        }
+        label { font-size: 0.84rem; }
 
-        input,
-        textarea,
-        select {
+        input, textarea, select {
             padding: 0.75rem;
             font-size: 1rem;
         }
 
-        textarea {
-            min-height: 7rem;
-        }
+        textarea { min-height: 7rem; }
     }
 
-    .feature-card {
-        padding: var(--space-3, 0.75rem);
-    }
+    .feature-card { padding: var(--space-3, 0.75rem); }
 
     .history-list {
         flex-direction: column;
-
-        button {
-            width: 100%;
-            min-width: auto;
-        }
+        button { width: 100%; min-width: auto; }
     }
 }
 
 @media (max-width: 400px) {
-
     .feature-page,
     .mock-page,
     .dashboard-page {
@@ -551,26 +528,13 @@
     .ats-form {
         padding: var(--space-3, 0.75rem);
 
-        input,
-        textarea,
-        select {
-            padding: 0.65rem;
-        }
-
-        textarea {
-            min-height: 6rem;
-        }
+        input, textarea, select { padding: 0.65rem; }
+        textarea { min-height: 6rem; }
     }
 
     .skill-item {
         padding: var(--space-2, 0.5rem);
-
-        strong {
-            font-size: 0.92rem;
-        }
-
-        span {
-            font-size: 0.78rem;
-        }
+        strong { font-size: 0.92rem; }
+        span   { font-size: 0.78rem; }
     }
 }

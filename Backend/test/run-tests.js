@@ -1,8 +1,10 @@
+const { runBehaviorTests } = require("./behavior.test")
 const { runAtsTests } = require("./ats.test")
 const { runRouteTests } = require("./routes.test")
 const { runValidatorTests } = require("./validators.test")
 
 async function run() {
+    runBehaviorTests()
     runAtsTests()
     runValidatorTests()
     await runRouteTests()

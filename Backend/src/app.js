@@ -26,7 +26,7 @@ app.use(rateLimit({
 
 /* require all the routes here */
 const authRouter = require("./routes/auth.routes")
-const interviewRouter = require("./routes/interview.routes")
+const interviewRouter = require("./modules/interview/interview.routes")
 const atsRouter = require("./modules/ats/ats.routes")
 const mockInterviewRouter = require("./modules/mockInterview/mockInterview.routes")
 const analyticsRouter = require("./modules/analytics/analytics.routes")
