@@ -44,8 +44,8 @@ module.exports = {
   },
   clearCookieOptions: {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
+    secure: true,
+    sameSite: "none",
   },
-  puppeteerExecutablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+  peteerExecutablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
 };

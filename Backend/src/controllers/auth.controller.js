@@ -42,7 +42,6 @@ async function registerUserController(req, res) {
 
     res.cookie("token", token, cookieOptions)
 
-
     res.status(201).json({
         message: "User registered successfully",
         user: toPublicUser(user)
@@ -72,11 +71,15 @@ async function loginUserController(req, res) {
         throw new ApiError(401, "Invalid email or password.")
     }
 
+    const token = createToken(user)           // ✅ fixed: token is now created
+
+    res.cookie("token", token, cookieOptions) // ✅ fixed: token is set in cookie
+
     res.status(200).json({
-    message: "User loggedIn successfully.",
-    token,
-    user: toPublicUser(user)
-});
+        message: "User loggedIn successfully.",
+        token,
+        user: toPublicUser(user)
+    })
 }
 
 
