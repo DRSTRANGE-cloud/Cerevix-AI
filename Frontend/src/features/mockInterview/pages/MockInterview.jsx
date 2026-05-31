@@ -205,7 +205,6 @@ export default function MockInterview() {
                                 ) : (
                                     <>
                                         Start Interview
-                                        <span className="arrow">-&gt;</span>
                                     </>
                                 )}
                             </button>
