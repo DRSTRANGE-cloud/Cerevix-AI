@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="C:\Users\Yadav\OneDrive\Desktop\Desktop\Web Development\Projects\Interview-ai\Frontend\public\cerevix-logo.png" width="60" alt="Cerevix AI Logo" />
-
 # Cerevix AI
 
 **AI-powered interview preparation platform for serious job seekers.**
