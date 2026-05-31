@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://cerevix-ai.vercel.app/favicon.ico" width="60" alt="Cerevix AI Logo" />
+<img src="C:\Users\Yadav\OneDrive\Desktop\Desktop\Web Development\Projects\Interview-ai\Frontend\public\cerevix-logo.png" width="60" alt="Cerevix AI Logo" />
 
 # Cerevix AI
 
@@ -29,33 +29,38 @@ Cerevix AI helps you land your next job by combining resume intelligence, AI moc
 ## Features
 
 ### 📄 ATS Resume Analysis
+
 Upload your resume and get an instant ATS score, keyword gap analysis, and AI-powered suggestions to match any job description.
 
 ### 🤖 AI Mock Interviews
+
 Simulate real interviews with AI-generated technical and behavioral questions, follow-ups, and performance feedback powered by Google Gemini.
 
 ### 📊 Career Analytics
+
 Track your ATS score trends, interview performance, and skill gaps over time through a visual analytics dashboard.
 
 ### 📥 Resume PDF Generator
+
 Generate a polished, ATS-friendly resume as a downloadable PDF — built and rendered with Puppeteer.
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | React 19, Vite, SCSS, Framer Motion, Recharts |
-| Backend | Node.js, Express.js, MongoDB, JWT |
-| AI | Google Gemini AI, Zod, Prompt Engineering |
-| Infrastructure | Vercel (frontend), Render (backend) |
+| Layer          | Technology                                    |
+| -------------- | --------------------------------------------- |
+| Frontend       | React 19, Vite, SCSS, Framer Motion, Recharts |
+| Backend        | Node.js, Express.js, MongoDB, JWT             |
+| AI             | Google Gemini AI, Zod, Prompt Engineering     |
+| Infrastructure | Vercel (frontend), Render (backend)           |
 
 ---
 
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js 18+
 - MongoDB URI
 - Google Gemini API key
@@ -132,11 +137,11 @@ cerevix-ai/
 
 ## Deployment
 
-| Service | Platform | URL |
-|---|---|---|
-| Frontend | Vercel | [cerevix-ai.vercel.app](https://cerevix-ai.vercel.app) |
-| Backend | Render | cerevix-ai.onrender.com |
-| Database | MongoDB Atlas | — |
+| Service  | Platform      | URL                                                    |
+| -------- | ------------- | ------------------------------------------------------ |
+| Frontend | Vercel        | [cerevix-ai.vercel.app](https://cerevix-ai.vercel.app) |
+| Backend  | Render        | cerevix-ai.onrender.com                                |
+| Database | MongoDB Atlas | —                                                      |
 
 ---
 
