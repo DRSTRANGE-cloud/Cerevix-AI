@@ -1,5 +1,4 @@
 <div align="center">
-
 # Cerevix AI
 
 **AI-powered interview preparation platform for serious job seekers.**
