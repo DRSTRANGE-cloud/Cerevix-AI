@@ -72,13 +72,11 @@ async function loginUserController(req, res) {
         throw new ApiError(401, "Invalid email or password.")
     }
 
-    const token = createToken(user)
-
-    res.cookie("token", token, cookieOptions)
     res.status(200).json({
-        message: "User loggedIn successfully.",
-        user: toPublicUser(user)
-    })
+    message: "User loggedIn successfully.",
+    token,
+    user: toPublicUser(user)
+});
 }
 
 
