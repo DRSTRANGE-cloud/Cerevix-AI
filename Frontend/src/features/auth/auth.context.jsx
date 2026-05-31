@@ -13,13 +13,22 @@ export const AuthProvider = ({ children }) => {
         let isMounted = true
 
         const hydrateSession = async () => {
+            const token = localStorage.getItem("token")  // ✅ check token first
+
+            if (!token) {
+                if (isMounted) {
+                    setCheckingSession(false)
+                }
+                return
+            }
+
             try {
                 const data = await getMe()
-
                 if (isMounted) {
                     setUser(data.user)
                 }
             } catch {
+                localStorage.removeItem("token")  // ✅ clear invalid token
                 if (isMounted) {
                     setUser(null)
                 }
@@ -39,9 +48,9 @@ export const AuthProvider = ({ children }) => {
 
     const handleLogin = useCallback(async ({ email, password }) => {
         setLoading(true)
-
         try {
             const data = await login({ email, password })
+            localStorage.setItem("token", data.token)  // ✅ save token
             setUser(data.user)
             return data.user
         } finally {
@@ -51,9 +60,9 @@ export const AuthProvider = ({ children }) => {
 
     const handleRegister = useCallback(async ({ username, email, password }) => {
         setLoading(true)
-
         try {
             const data = await register({ username, email, password })
+            localStorage.setItem("token", data.token)  // ✅ save token
             setUser(data.user)
             return data.user
         } finally {
@@ -63,9 +72,9 @@ export const AuthProvider = ({ children }) => {
 
     const handleLogout = useCallback(async () => {
         setLoading(true)
-
         try {
             await logout()
+            localStorage.removeItem("token")  // ✅ clear token
             setUser(null)
         } finally {
             setLoading(false)
@@ -81,16 +90,11 @@ export const AuthProvider = ({ children }) => {
         handleRegister,
         handleLogout,
         setUser
-    }), [ user, loading, checkingSession, handleLogin, handleRegister, handleLogout ])
-
-    
-
+    }), [user, loading, checkingSession, handleLogin, handleRegister, handleLogout])
 
     return (
-        <AuthContext.Provider value={value} >
+        <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     )
-
-    
 }

@@ -40,8 +40,6 @@ async function registerUserController(req, res) {
 
     const token = createToken(user)
 
-    res.cookie("token", token, cookieOptions)
-
     res.status(201).json({
         message: "User registered successfully",
         user: toPublicUser(user)
@@ -71,9 +69,7 @@ async function loginUserController(req, res) {
         throw new ApiError(401, "Invalid email or password.")
     }
 
-    const token = createToken(user)           // ✅ fixed: token is now created
-
-    res.cookie("token", token, cookieOptions) // ✅ fixed: token is set in cookie
+    const token = createToken(user)          
 
     res.status(200).json({
         message: "User loggedIn successfully.",
@@ -90,16 +86,9 @@ async function loginUserController(req, res) {
  */
 async function logoutUserController(req, res) {
     const token = req.cookies.token
-
-    if (token) {
-        await tokenBlacklistModel.updateOne({ token }, { $setOnInsert: { token } }, { upsert: true })
-    }
-
-    res.clearCookie("token", clearCookieOptions)
-
-    res.status(200).json({
-        message: "User logged out successfully"
-    })
+    async function logoutUserController(req, res) {
+    res.status(200).json({ message: "User logged out successfully" })
+}
 }
 
 /**
@@ -121,8 +110,6 @@ async function getMeController(req, res) {
     })
 
 }
-
-
 
 module.exports = {
     registerUserController,
