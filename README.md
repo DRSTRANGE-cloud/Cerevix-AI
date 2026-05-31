@@ -1,252 +1,159 @@
-# 🚀 Cerevix AI
+<div align="center">
 
-Cerevix AI is a modern AI-powered interview preparation platform that helps users analyze resumes, prepare for interviews, identify skill gaps, and improve career readiness using Google Gemini AI.
+<img src="https://cerevix-ai.vercel.app/favicon.ico" width="60" alt="Cerevix AI Logo" />
 
-The platform combines:
+# Cerevix AI
 
-* 📄 ATS Resume Analysis
-* 🤖 AI Mock Interviews
-* 📊 Career Analytics
-* 🎯 Skill Gap Detection
-* 🧠 AI Interview Preparation
-* 📥 Resume PDF Generation
+**AI-powered interview preparation platform for serious job seekers.**
 
-into one intelligent career platform.
+[Live Demo](https://cerevix-ai.vercel.app) · [Report Bug](https://github.com/DRSTRANGE-cloud/Cerevix-AI/issues) · [Request Feature](https://github.com/DRSTRANGE-cloud/Cerevix-AI/issues)
 
----
+![React](https://img.shields.io/badge/React_19-20232A?style=flat&logo=react&logoColor=61DAFB)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=flat&logo=mongodb&logoColor=white)
+![Google Gemini](https://img.shields.io/badge/Gemini_AI-4285F4?style=flat&logo=google&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel&logoColor=white)
 
-# 🔥 Features
-
-## 📄 ATS Resume Intelligence
-
-* ATS score generation
-* Resume vs Job Description matching
-* Missing skills detection
-* Resume improvement suggestions
-* AI-powered recommendations
+</div>
 
 ---
 
-## 🤖 AI Mock Interview Simulator
+## What is Cerevix AI?
 
-* Technical & behavioral interviews
-* AI-generated interview questions
-* Follow-up questions
-* Performance evaluation
-* Confidence & communication analysis
+Cerevix AI helps you land your next job by combining resume intelligence, AI mock interviews, and career analytics into one platform. Upload your resume, paste a job description, and get a full picture of where you stand — and how to improve.
+
+**Live at → [cerevix-ai.vercel.app](https://cerevix-ai.vercel.app)**
 
 ---
 
-## 📊 Analytics Dashboard
+## Features
 
-* ATS score trends
-* Interview performance tracking
-* Weak skills analysis
-* Progress insights
-* Activity timeline
+### 📄 ATS Resume Analysis
+Upload your resume and get an instant ATS score, keyword gap analysis, and AI-powered suggestions to match any job description.
 
----
+### 🤖 AI Mock Interviews
+Simulate real interviews with AI-generated technical and behavioral questions, follow-ups, and performance feedback powered by Google Gemini.
 
-## 🧠 AI Interview Preparation
+### 📊 Career Analytics
+Track your ATS score trends, interview performance, and skill gaps over time through a visual analytics dashboard.
 
-* Personalized interview questions
-* Skill-gap analysis
-* Preparation roadmap
-* Match score evaluation
+### 📥 Resume PDF Generator
+Generate a polished, ATS-friendly resume as a downloadable PDF — built and rendered with Puppeteer.
 
 ---
 
-## 📥 Resume PDF Generator
+## Tech Stack
 
-* AI-generated ATS-friendly resumes
-* Downloadable PDF resumes
-* Puppeteer-powered PDF rendering
-
----
-
-# 🛠️ Tech Stack
-
-## Frontend
-
-* ⚛️ React 19
-* ⚡ Vite
-* 🎨 SCSS
-* 🔀 React Router v7
-* 📡 Axios
-* 📊 Recharts
-* 🎞️ Framer Motion
+| Layer | Technology |
+|---|---|
+| Frontend | React 19, Vite, SCSS, Framer Motion, Recharts |
+| Backend | Node.js, Express.js, MongoDB, JWT |
+| AI | Google Gemini AI, Zod, Prompt Engineering |
+| Infrastructure | Vercel (frontend), Render (backend) |
 
 ---
 
-## Backend
+## Getting Started
 
-* 🟢 Node.js
-* 🚂 Express.js
-* 🍃 MongoDB
-* 🔐 JWT Authentication
-* 📂 Multer
-* 📄 pdf-parse
-* 🖨️ Puppeteer
+### Prerequisites
+- Node.js 18+
+- MongoDB URI
+- Google Gemini API key
 
----
-
-## AI Integration
-
-* 🤖 Google Gemini AI
-* 📐 Zod Validation
-* 🧩 Structured JSON Outputs
-* 🧠 Prompt Engineering
-
----
-
-# 🏗️ Project Structure
-
-```bash
-cerevix-ai/
-│
-├── frontend/
-├── backend/
-├── assets/
-├── README.md
-└── .env.example
-```
-
----
-
-# ⚙️ Core Workflow
-
-```txt
-Resume Upload
-    ↓
-PDF Parsing
-    ↓
-Gemini AI Analysis
-    ↓
-ATS + Interview Intelligence
-    ↓
-MongoDB Storage
-    ↓
-Analytics Dashboard
-```
-
----
-
-# 🎨 UI & Design
-
-Cerevix AI follows a modern AI SaaS design inspired by:
-
-* ✨ Linear
-* ⚡ Vercel
-* 🧠 OpenAI
-* 📘 Notion
-* 🔍 Perplexity AI
-
-### Design Highlights
-
-* 🌑 Dark futuristic UI
-* ✨ Glassmorphism effects
-* 📱 Fully responsive design
-* 🎞️ Smooth animations
-* 🎨 AI-inspired gradients
-
----
-
-# 🚀 Installation
-
-## Clone Repository
+### 1. Clone the repo
 
 ```bash
 git clone https://github.com/DRSTRANGE-cloud/Cerevix-AI.git
+cd Cerevix-AI
 ```
 
----
-
-## Frontend Setup
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
----
-
-## Backend Setup
+### 2. Setup the backend
 
 ```bash
 cd backend
 npm install
+```
+
+Create a `.env` file in the `backend` folder:
+
+```env
+PORT=3000
+MONGO_URI=your_mongodb_uri
+JWT_SECRET=your_jwt_secret
+GOOGLE_GENAI_API_KEY=your_gemini_api_key
+NODE_ENV=development
+```
+
+```bash
 npm start
 ```
 
----
+### 3. Setup the frontend
 
-# 🔑 Environment Variables
+```bash
+cd frontend
+npm install
+```
 
-Create a `.env` file inside the backend folder:
+Create a `.env` file in the `frontend` folder:
 
 ```env
-PORT=5000
-MONGO_URI=your_mongodb_uri
-JWT_SECRET=your_secret
-GEMINI_API_KEY=your_gemini_api_key
-CLIENT_URL=http://localhost:5173
+VITE_API_URL=http://localhost:3000
 ```
----
 
-# 🔒 Security Features
+```bash
+npm run dev
+```
 
-* 🔐 JWT Authentication
-* 🍪 Secure Cookie Sessions
-* 🛡️ Protected Routes
-* ✅ Input Validation
-* 📂 File Upload Validation
-* 🚦 Rate Limiting
+Frontend runs at `http://localhost:5173`
 
 ---
 
-# 🚧 Future Improvements
+## Project Structure
 
-* 🎙️ Voice-based AI interviews
-* 💻 Coding interview workspace
-* 🧠 AI roadmap generator
-* 📈 Advanced analytics
-* ⚡ Real-time AI streaming
-* 📦 Redis caching
-
----
-
-# 💡 Why Cerevix AI?
-
-Cerevix AI was built to simulate a real-world AI SaaS platform focused on interview intelligence and career preparation.
-
-This project demonstrates:
-
-* 💻 Full-stack development
-* 🤖 AI orchestration
-* 📱 Responsive UI systems
-* ⚡ Backend optimization
-* 🧠 AI-powered workflows
-* 🏗️ Scalable architecture
+```
+cerevix-ai/
+├── frontend/               # React + Vite app
+│   ├── src/
+│   │   ├── features/       # Auth, Interview, ATS, Analytics
+│   │   ├── lib/            # Axios client
+│   │   └── components/     # Shared UI components
+│
+├── backend/                # Express API
+│   ├── src/
+│   │   ├── modules/        # Interview, ATS, Mock Interview, Analytics
+│   │   ├── middlewares/    # Auth, Error, Sanitize
+│   │   └── config/         # DB, Env, Cookie options
+│
+└── README.md
+```
 
 ---
 
-# 👨‍💻 Author
+## Deployment
 
-### Deepak Yadav
-
-Passionate full-stack developer focused on AI-powered products and scalable web applications.
+| Service | Platform | URL |
+|---|---|---|
+| Frontend | Vercel | [cerevix-ai.vercel.app](https://cerevix-ai.vercel.app) |
+| Backend | Render | cerevix-ai.onrender.com |
+| Database | MongoDB Atlas | — |
 
 ---
 
-# 📜 License
+## Author
 
-This project is licensed under the MIT License.
+**Deepak Yadav** — Full-stack developer building AI-powered products.
+
+[GitHub](https://github.com/DRSTRANGE-cloud) · [LinkedIn](https://linkedin.com/in/your-profile)
+
+---
+
+## License
+
+MIT License — feel free to use this project as a reference or starting point.
 
 ---
 
 <div align="center">
-
-### 🚀 Cerevix AI — Prepare Smarter. Interview Better.
-
+  <strong>Cerevix AI — Prepare Smarter. Interview Better.</strong>
 </div>
