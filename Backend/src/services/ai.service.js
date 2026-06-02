@@ -83,16 +83,16 @@ async function generateStructuredContent({ prompt, schema }) {
 
 
 const interviewReportSchema = z.object({
-    matchScore: z.number().describe("A score between 0 and 100 indicating how well the candidate's profile matches the job describe"),
+    matchScore: z.coerce.number().min(0).max(100).describe("A score between 0 and 100 indicating how well the candidate's profile matches the job describe"),
     technicalQuestions: z.array(z.object({
         question: z.string().describe("The technical question can be asked in the interview"),
         intention: z.string().describe("The intention of interviewer behind asking this question"),
         answer: z.string().describe("How to answer this question, what points to cover, what approach to take etc.")
     })).describe("Technical questions that can be asked in the interview along with their intention and how to answer them"),
     behavioralQuestions: z.array(z.object({
-        question: z.string().describe("The technical question can be asked in the interview"),
-        intention: z.string().describe("The intention of interviewer behind asking this question"),
-        answer: z.string().describe("How to answer this question, what points to cover, what approach to take etc.")
+        question: z.string().describe("The behavioral question can be asked in the interview"),
+        intention: z.string().describe("What the interviewer wants to learn about the candidate's soft skills or past behavior"),
+        answer: z.string().describe("The ideal STAR method response or key points the candidate should mention")
     })).describe("Behavioral questions that can be asked in the interview along with their intention and how to answer them"),
     skillGaps: z.array(z.object({
         skill: z.string().describe("The skill which the candidate is lacking"),
@@ -110,7 +110,12 @@ const atsInsightSchema = z.object({
     strengths: z.array(z.string()).describe("Strong resume elements for this role"),
     weaknesses: z.array(z.string()).describe("Weak resume sections or missing evidence"),
     suggestions: z.array(z.string()).describe("Concrete ATS optimization suggestions"),
-    recommendations: z.array(z.string()).describe("AI-powered resume improvement recommendations")
+    recommendations: z.array(z.object({
+        issue: z.string().describe("The specific issue found (e.g., 'Weak summary')"),
+        suggestedImprovement: z.string().describe("The exact text or instruction to fix it"),
+        section: z.string().describe("The resume section this applies to"),
+        importance: z.enum(["low", "medium", "high"]).describe("The priority of the fix")
+    })).describe("Detailed AI-powered resume improvement recommendations")
 })
 
 const mockQuestionSchema = z.object({
@@ -314,9 +319,38 @@ Missing skills: ${missingSkills.join(", ") || "none"}
 Keyword match: ${keywordMatch}%
 ATS score: ${atsScore}
 
-Return concise, specific resume strengths, weaknesses, ATS suggestions, and improvement recommendations.`
+Return concise, specific resume strengths, weaknesses, ATS suggestions, and short recommendation sentences.`
 
-    return generateStructuredContent({ prompt, schema: atsInsightSchema })
+    try {
+        return await generateStructuredContent({ prompt, schema: atsInsightSchema })
+    } catch (error) {
+        console.error("ATS insight generation fallback:", error.message)
+
+        const topMatched = (matchedSkills || []).slice(0, 6)
+        const topMissing = (missingSkills || []).slice(0, 6)
+
+        return {
+            strengths: topMatched.length
+                ? [
+                    `Matches role keywords for ${topMatched.join(", ")}.`,
+                    "Keeps some direct alignment with the target role."
+                ]
+                : [ "Shows professional experience that can be sharpened for ATS parsing." ],
+            weaknesses: topMissing.length
+                ? [ `Missing or weak evidence for: ${topMissing.join(", ")}.` ]
+                : [ "Could use clearer role-specific wording and achievements." ],
+            suggestions: [
+                `Increase keyword coverage from ${keywordMatch}% by adding the most relevant missing terms to the summary and experience sections.`,
+                "Use measurable results, tools, and scope details in bullet points."
+            ],
+            recommendations: [
+                topMissing.length
+                    ? `Missing keywords: naturally include ${topMissing.slice(0, 3).join(", ")} where truthful and relevant.`
+                    : "Add more role-specific keywords and accomplishment language to improve ATS ranking.",
+                "Rewrite 2-3 bullets with action verbs, outcomes, and any concrete numbers you can support."
+            ]
+        }
+    }
 }
 
 async function generateMockQuestion({ role, difficulty, interviewType, messages = [] }) {
@@ -398,9 +432,339 @@ async function generateResumePdf({ resume, selfDescription, jobDescription }) {
 
 }
 
+/**
+ * Creates HTML from resume sections
+ */
+function createResumeHtml(sections = {}) {
+    const {
+        name = "",
+        email = "",
+        phone = "",
+        summary = "",
+        experience = [],
+        education = [],
+        skills = [],
+        projects = [],
+        certifications = []
+    } = sections
+
+    const formatArray = (arr) => {
+        if (Array.isArray(arr)) {
+            return arr.map((item) => `<li>${typeof item === "string" ? item : item}</li>`).join("")
+        }
+        if (typeof arr === "string") {
+            return arr.split("\n").filter(Boolean).map((item) => `<li>${item}</li>`).join("")
+        }
+        return ""
+    }
+
+    const html = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Resume - ${name}</title>
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+              
+                .resume-container {
+                    max-width: 850px;
+                    margin: 0 auto;
+                    background-color: white;
+                    padding: 40px;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                    border-radius: 4px;
+                }
+                .header {
+                    border-bottom: 3px solid #2c3e50;
+                    padding-bottom: 20px;
+                    margin-bottom: 25px;
+                }
+                .header h1 {
+                    font-size: 28px;
+                    color: #2c3e50;
+                    margin-bottom: 8px;
+                }
+                .contact-info {
+                    font-size: 13px;
+                    color: #555;
+                    display: flex;
+                    gap: 15px;
+                    flex-wrap: wrap;
+                }
+                .contact-info span::before {
+                    content: "• ";
+                    color: #3498db;
+                }
+                .contact-info span:first-child::before {
+                    content: "";
+                }
+                .section {
+                    margin-bottom: 22px;
+                }
+                .section-title {
+                    font-size: 14px;
+                    font-weight: 700;
+                    color: #2c3e50;
+                    text-transform: uppercase;
+                    border-bottom: 2px solid #3498db;
+                    padding-bottom: 8px;
+                    margin-bottom: 12px;
+                    letter-spacing: 1px;
+                }
+                .summary {
+                    font-size: 14px;
+                    line-height: 1.7;
+                    color: #444;
+                }
+                ul {
+                    margin-left: 20px;
+                    font-size: 13px;
+                    color: #444;
+                }
+                ul li {
+                    margin-bottom: 6px;
+                    line-height: 1.5;
+                }
+                .item {
+                    margin-bottom: 14px;
+                }
+                .item-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: baseline;
+                    margin-bottom: 4px;
+                }
+                .item-title {
+                    font-weight: 600;
+                    color: #2c3e50;
+                    font-size: 13px;
+                }
+                .item-subtitle {
+                    font-style: italic;
+                    color: #666;
+                    font-size: 12px;
+                }
+                .item-description {
+                    font-size: 13px;
+                    color: #555;
+                    margin-top: 4px;
+                    line-height: 1.5;
+                }
+                .skill-tag {
+                    display: inline-block;
+                    background-color: #e8f0f7;
+                    color: #2c3e50;
+                    padding: 4px 10px;
+                    margin: 4px 6px 4px 0;
+                    border-radius: 3px;
+                    font-size: 12px;
+                    font-weight: 500;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="resume-container">
+                ${name || email || phone ? `
+                    <div class="header">
+                        ${name ? `<h1>${name}</h1>` : ""}
+                        ${email || phone ? `
+                            <div class="contact-info">
+                                ${email ? `<span>${email}</span>` : ""}
+                                ${phone ? `<span>${phone}</span>` : ""}
+                            </div>
+                        ` : ""}
+                    </div>
+                ` : ""}
+
+                ${summary ? `
+                    <div class="section">
+                        <div class="section-title">Professional Summary</div>
+                        <div class="summary">${typeof summary === "string" ? summary : summary.join(" ")}</div>
+                    </div>
+                ` : ""}
+
+                ${experience && (Array.isArray(experience) ? experience.length > 0 : experience) ? `
+                    <div class="section">
+                        <div class="section-title">Experience</div>
+                        ${Array.isArray(experience) ? experience.map((exp) => `
+                            <div class="item">
+                                <div class="item-header">
+                                    <span class="item-title">${exp.title || exp}</span>
+                                </div>
+                                ${exp.company ? `<div class="item-subtitle">${exp.company}${exp.duration ? ` | ${exp.duration}` : ""}</div>` : ""}
+                                ${exp.description ? `<div class="item-description">${exp.description}</div>` : ""}
+                            </div>
+                        `).join("") : `<div class="item">${experience}</div>`}
+                    </div>
+                ` : ""}
+
+                ${education && (Array.isArray(education) ? education.length > 0 : education) ? `
+                    <div class="section">
+                        <div class="section-title">Education</div>
+                        ${Array.isArray(education) ? education.map((edu) => `
+                            <div class="item">
+                                <div class="item-header">
+                                    <span class="item-title">${edu.degree || edu}</span>
+                                </div>
+                                ${edu.school ? `<div class="item-subtitle">${edu.school}${edu.year ? ` | ${edu.year}` : ""}</div>` : ""}
+                            </div>
+                        `).join("") : `<div class="item">${education}</div>`}
+                    </div>
+                ` : ""}
+
+                ${skills && (Array.isArray(skills) ? skills.length > 0 : skills) ? `
+                    <div class="section">
+                        <div class="section-title">Skills</div>
+                        <div>
+                            ${Array.isArray(skills) ? skills.map((skill) => `<span class="skill-tag">${skill}</span>`).join("") : `<span class="skill-tag">${skills}</span>`}
+                        </div>
+                    </div>
+                ` : ""}
+
+                ${projects && (Array.isArray(projects) ? projects.length > 0 : projects) ? `
+                    <div class="section">
+                        <div class="section-title">Projects</div>
+                        ${Array.isArray(projects) ? projects.map((project) => `
+                            <div class="item">
+                                <div class="item-header">
+                                    <span class="item-title">${project.name || project}</span>
+                                </div>
+                                ${project.description ? `<div class="item-description">${project.description}</div>` : ""}
+                            </div>
+                        `).join("") : `<div class="item">${projects}</div>`}
+                    </div>
+                ` : ""}
+
+                ${certifications && (Array.isArray(certifications) ? certifications.length > 0 : certifications) ? `
+                    <div class="section">
+                        <div class="section-title">Certifications</div>
+                        <ul>${formatArray(certifications)}</ul>
+                    </div>
+                ` : ""}
+            </div>
+        </body>
+        </html>
+    `
+
+    return html
+}
+
+/**
+ * Generates resume preview with sections and AI recommendations
+ */
+async function generateResumePreview({ resume, selfDescription, jobDescription, title }) {
+    const resumePreviewSchema = z.object({
+        sections: z.object({
+            name: z.string().optional(),
+            email: z.string().optional(),
+            phone: z.string().optional(),
+            summary: z.union([z.string(), z.array(z.string())]).optional(),
+            experience: z.union([z.string(), z.array(z.any())]).optional(),
+            education: z.union([z.string(), z.array(z.any())]).optional(),
+            skills: z.union([z.string(), z.array(z.string())]).optional(),
+            projects: z.union([z.string(), z.array(z.any())]).optional(),
+            certifications: z.union([z.string(), z.array(z.string())]).optional()
+        }).describe("Resume sections with contact info, summary, experience, education, skills, projects, certifications"),
+        recommendations: z.array(z.object({
+            issue: z.string().describe("The specific resume improvement needed"),
+            suggestedImprovement: z.string().describe("The improvement text or action"),
+            section: z.string().describe("Which resume section this applies to"),
+            importance: z.enum(["low", "medium", "high"]).describe("Priority of this improvement")
+        })).describe("AI-generated resume improvement recommendations")
+    })
+
+    const prompt = `Analyze this candidate's resume and job target, then generate:
+1. A structured resume with proper sections
+2. AI recommendations for improvements
+
+Resume: ${resume}
+Self Description: ${selfDescription}
+Target Job: ${jobDescription || title || "not specified"}
+
+Generate a resume with all proper sections filled in logically based on the provided information.
+Also provide 3-5 specific, actionable recommendations for resume improvement to match the target job.`
+
+    try {
+        const result = await generateStructuredContent({ prompt, schema: resumePreviewSchema })
+        const html = createResumeHtml(result.sections)
+
+        return {
+            html,
+            sections: result.sections,
+            recommendations: result.recommendations || []
+        }
+    } catch (error) {
+        console.error("Error generating resume preview:", error)
+        // Fallback to simple resume structure
+        return {
+            html: createFallbackHtml(resume, jobDescription, selfDescription),
+            sections: {
+                summary: selfDescription,
+                experience: resume,
+                name: "Professional Resume"
+            },
+            recommendations: [
+                {
+                    issue: "Add quantifiable metrics",
+                    suggestedImprovement: "Include specific numbers, percentages, or measurable achievements in experience section",
+                    section: "experience",
+                    importance: "high"
+                },
+                {
+                    issue: "Highlight relevant keywords",
+                    suggestedImprovement: "Add more industry-specific keywords from the job description",
+                    section: "skills",
+                    importance: "high"
+                }
+            ]
+        }
+    }
+}
+
+/**
+ * Improves a specific resume section using AI
+ */
+async function improveResumeSection({ section, content, jobDescription, instruction }) {
+    const improvementSchema = z.object({
+        content: z.string().describe("The improved content for the resume section"),
+        suggestions: z.array(z.string()).optional().describe("Additional suggestions for improvement")
+    })
+
+    const prompt = `Improve this resume section for better ATS matching and presentation.
+
+Section: ${section}
+Current content: ${content}
+Job description: ${jobDescription || "not specified"}
+Improvement instruction: ${instruction}
+
+Rewrite the section to be more professional, impactful, and relevant to the job description.
+Include specific metrics and action verbs where appropriate.
+Keep the improved content concise but compelling.`
+
+    try {
+        const result = await generateStructuredContent({ prompt, schema: improvementSchema })
+        return {
+            content: result.content,
+            suggestions: result.suggestions || []
+        }
+    } catch (error) {
+        console.error("Error improving resume section:", error)
+        // Fallback to basic enhancement
+        return {
+            content: content || `[Add more details about your ${section} here]`,
+            suggestions: [`Review the job description to align with required keywords`]
+        }
+    }
+}
+
 module.exports = {
     generateInterviewReport,
     generateResumePdf,
+    generateResumePreview,
+    improveResumeSection,
+    createResumeHtml,
     generateAtsInsights,
     generateMockQuestion,
     evaluateMockAnswer,

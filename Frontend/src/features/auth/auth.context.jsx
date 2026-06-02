@@ -2,9 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { AuthContext } from "./auth.context-value";
 import { getMe, login, logout, register } from "./services/auth.api";
 
-
-export const AuthProvider = ({ children }) => { 
-
+export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(false)
     const [checkingSession, setCheckingSession] = useState(true)
@@ -13,7 +11,7 @@ export const AuthProvider = ({ children }) => {
         let isMounted = true
 
         const hydrateSession = async () => {
-            const token = localStorage.getItem("token")  // ✅ check token first
+            const token = localStorage.getItem("token")
 
             if (!token) {
                 if (isMounted) {
@@ -28,7 +26,7 @@ export const AuthProvider = ({ children }) => {
                     setUser(data.user)
                 }
             } catch {
-                localStorage.removeItem("token")  // ✅ clear invalid token
+                localStorage.removeItem("token")
                 if (isMounted) {
                     setUser(null)
                 }
@@ -50,7 +48,7 @@ export const AuthProvider = ({ children }) => {
         setLoading(true)
         try {
             const data = await login({ email, password })
-            localStorage.setItem("token", data.token)  // ✅ save token
+            localStorage.setItem("token", data.token)
             setUser(data.user)
             return data.user
         } finally {
@@ -62,7 +60,7 @@ export const AuthProvider = ({ children }) => {
         setLoading(true)
         try {
             const data = await register({ username, email, password })
-            localStorage.setItem("token", data.token)  // ✅ save token
+            localStorage.setItem("token", data.token)
             setUser(data.user)
             return data.user
         } finally {
@@ -74,9 +72,11 @@ export const AuthProvider = ({ children }) => {
         setLoading(true)
         try {
             await logout()
-            localStorage.removeItem("token")  // ✅ clear token
-            setUser(null)
+        } catch {
+            // Keep local logout reliable even if the backend is waking up or unreachable.
         } finally {
+            localStorage.removeItem("token")
+            setUser(null)
             setLoading(false)
         }
     }, [])

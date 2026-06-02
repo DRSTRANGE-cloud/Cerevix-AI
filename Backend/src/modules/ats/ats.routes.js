@@ -17,6 +17,12 @@ atsRouter.post(
 )
 
 atsRouter.get("/", asyncHandler(authMiddleware.authUser), asyncHandler(atsController.getAtsAnalyses))
+atsRouter.get("/sources", asyncHandler(authMiddleware.authUser), asyncHandler(atsController.getAtsSources))
+atsRouter.post(
+    "/from-interview/:interviewId",
+    asyncHandler(authMiddleware.authUser),
+    asyncHandler(atsController.createAtsAnalysisFromInterview)
+)
 
 atsRouter.delete("/:analysisId", asyncHandler(authMiddleware.authUser), asyncHandler(atsController.deleteAtsAnalysis))
 

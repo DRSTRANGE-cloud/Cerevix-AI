@@ -15,6 +15,10 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
     (response) => response,
     (error) => {
+        if (error.response?.status === 401) {
+            localStorage.removeItem("token")
+        }
+
         const apiError = new Error(
             error.response?.data?.message || error.message || "Request failed. Please try again."
         )

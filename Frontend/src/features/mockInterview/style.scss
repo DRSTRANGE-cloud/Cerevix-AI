@@ -5,6 +5,10 @@
     padding: clamp(1.25rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2rem);
     position: relative;
     overflow-x: hidden;
+    background:
+        radial-gradient(ellipse 70% 34% at 50% -8%, rgba(20, 184, 166, 0.13), transparent),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent 28%),
+        var(--color-bg);
 
     &::before {
         content: "";
@@ -71,9 +75,9 @@
 }
 
 .stat-card {
-    background: linear-gradient(135deg, rgba(20, 184, 166, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
-    border: 1px solid rgba(20, 184, 166, 0.2);
-    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
     padding: var(--space-3) var(--space-2);
     text-align: center;
     backdrop-filter: blur(8px);
@@ -81,7 +85,7 @@
 
     &:hover {
         border-color: rgba(20, 184, 166, 0.4);
-        background: linear-gradient(135deg, rgba(20, 184, 166, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%);
+        background: rgba(20, 184, 166, 0.06);
         transform: translateY(-2px);
     }
 
@@ -124,9 +128,9 @@
 }
 
 .mock-form {
-    background: linear-gradient(135deg, rgba(18, 24, 39, 0.4) 0%, rgba(20, 184, 166, 0.05) 100%);
-    border: 1px solid rgba(20, 184, 166, 0.2);
-    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
     padding: clamp(1rem, 3vw, 1.5rem);
     backdrop-filter: blur(12px);
     display: grid;
@@ -167,7 +171,18 @@
         color: var(--color-muted);
     }
 }
+.form-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: #192235;
+    color: #eef4ff;
+}
 
+.form-select option {
+    background-color: #121827;
+    color: #eef4ff;
+}
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -227,11 +242,11 @@
     to { transform: rotate(360deg); }
 }
 
-// What to Expect Section
+
 .what-to-expect {
-    background: linear-gradient(135deg, rgba(20, 184, 166, 0.08) 0%, rgba(59, 130, 246, 0.03) 100%);
-    border: 1px solid rgba(20, 184, 166, 0.15);
-    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
     padding: var(--space-4);
     backdrop-filter: blur(8px);
 
@@ -257,10 +272,15 @@
             line-height: 1.6;
 
             &::before {
-                content: "OK";
+                content: "";
+                width: 0.45rem;
+                height: 0.45rem;
+                margin-top: 0.55rem;
+                border-radius: 999px;
+                background: var(--color-accent);
                 color: var(--color-accent);
                 font-weight: 700;
-                min-width: 1.5rem;
+                min-width: 0.45rem;
             }
         }
     }
@@ -289,9 +309,9 @@
     height: max-content;
     position: sticky;
     top: calc(60px + var(--space-3));
-    background: linear-gradient(135deg, rgba(18, 24, 39, 0.4) 0%, rgba(20, 184, 166, 0.03) 100%);
-    border: 1px solid rgba(20, 184, 166, 0.15);
-    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
     padding: var(--space-4);
     backdrop-filter: blur(12px);
     display: grid;
@@ -416,16 +436,38 @@
 }
 
 .chat-panel {
-    background: linear-gradient(135deg, rgba(18, 24, 39, 0.4) 0%, rgba(20, 184, 166, 0.02) 100%);
-    border: 1px solid rgba(20, 184, 166, 0.15);
-    border-radius: var(--radius-lg);
-    padding: var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 0;
     backdrop-filter: blur(12px);
     display: grid;
-    grid-template-rows: minmax(0, 1fr) auto;
-    gap: var(--space-4);
+    grid-template-rows: auto minmax(0, 1fr) auto;
     min-height: clamp(30rem, 62vh, 44rem);
     min-width: 0;
+    overflow: hidden;
+}
+
+.chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    background: rgba(255, 255, 255, 0.02);
+
+    h2 {
+        margin-top: var(--space-1);
+        font-size: clamp(1rem, 2vw, 1.25rem);
+    }
+
+    > span {
+        flex-shrink: 0;
+        color: var(--color-muted);
+        font-size: 0.86rem;
+        font-weight: 800;
+    }
 }
 
 .chat-messages {
@@ -434,7 +476,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
-    padding-right: var(--space-2);
+    padding: var(--space-4);
 
     @media (max-width: 600px) {
         max-height: 50vh;
@@ -461,7 +503,6 @@
 .chat-bubble {
     max-width: min(92%, 760px);
     padding: var(--space-3) var(--space-4);
-    border-radius: var(--radius-md);
     line-height: 1.6;
     display: flex;
     gap: var(--space-2);
@@ -478,13 +519,15 @@
     align-self: flex-start;
     background: linear-gradient(135deg, rgba(20, 184, 166, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
     border: 1px solid rgba(20, 184, 166, 0.2);
+    border-radius: 0 var(--radius-md) var(--radius-md) var(--radius-md);
     color: var(--color-text);
 
     .bubble-avatar {
         min-width: 32px;
         height: 32px;
-        background: linear-gradient(135deg, var(--color-accent) 0%, #0891b2 100%);
-        border-radius: 50%;
+        background: rgba(20, 184, 166, 0.16);
+        border: 1px solid rgba(20, 184, 166, 0.28);
+        border-radius: var(--radius-sm);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -496,8 +539,9 @@
 
 .chat-bubble--user {
     align-self: flex-end;
-    background: rgba(20, 184, 166, 0.15);
-    border: 1px solid rgba(20, 184, 166, 0.35);
+    background: rgba(59, 130, 246, 0.11);
+    border: 1px solid rgba(59, 130, 246, 0.28);
+    border-radius: var(--radius-md) 0 var(--radius-md) var(--radius-md);
     color: var(--color-text);
 
     .bubble-avatar {
@@ -548,6 +592,9 @@
 .answer-form {
     display: grid;
     gap: var(--space-3);
+    padding: var(--space-4);
+    border-top: 1px solid var(--color-border);
+    background: rgba(255, 255, 255, 0.018);
 
     textarea {
         width: 100%;
@@ -604,9 +651,10 @@
 
 // Final Report
 .final-report {
-    background: linear-gradient(135deg, rgba(18, 24, 39, 0.4) 0%, rgba(20, 184, 166, 0.05) 100%);
-    border: 1px solid rgba(20, 184, 166, 0.2);
-    border-radius: var(--radius-lg);
+    margin: var(--space-4);
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
     padding: var(--space-5);
     backdrop-filter: blur(12px);
     display: grid;
@@ -768,10 +816,15 @@
         padding-left: var(--space-2);
 
         &::before {
-            content: "->";
+            content: "";
+            width: 0.45rem;
+            height: 0.45rem;
+            margin-top: 0.55rem;
+            border-radius: 999px;
+            background: var(--color-accent);
             color: var(--color-accent);
             font-weight: 700;
-            min-width: 1.5rem;
+            min-width: 0.45rem;
         }
     }
 }

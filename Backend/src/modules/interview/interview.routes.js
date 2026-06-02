@@ -5,7 +5,10 @@ const { validateBody, validateParams } = require("../../middlewares/validate.mid
 const {
     generateInterviewSchema,
     interviewIdParamsSchema,
-    resumePdfParamsSchema
+    resumePdfParamsSchema,
+    resumeVersionParamsSchema,
+    updateResumePreviewSchema,
+    improveResumeSectionSchema
 } = require("../../validators/interview.validator")
 const { asyncHandler } = require("../../utils/http")
 const interviewController = require("./interview.controller")
@@ -23,6 +26,7 @@ interviewRouter.post(
 
 interviewRouter.get("/", asyncHandler(interviewController.getAllInterviewReportsController))
 interviewRouter.delete("/", asyncHandler(interviewController.clearInterviewReportsController))
+interviewRouter.get("/sources", asyncHandler(interviewController.getInterviewSourcesController))
 
 interviewRouter.get(
     "/report/:interviewId",
@@ -40,6 +44,44 @@ interviewRouter.post(
     "/resume/pdf/:interviewReportId",
     validateParams(resumePdfParamsSchema),
     asyncHandler(interviewController.generateResumePdfController)
+)
+
+interviewRouter.get(
+    "/resume/preview/:interviewReportId",
+    validateParams(resumePdfParamsSchema),
+    asyncHandler(interviewController.getResumePreviewController)
+)
+
+interviewRouter.post(
+    "/resume/preview/:interviewReportId",
+    validateParams(resumePdfParamsSchema),
+    asyncHandler(interviewController.generateResumePreviewController)
+)
+
+interviewRouter.put(
+    "/resume/preview/:interviewReportId",
+    validateParams(resumePdfParamsSchema),
+    validateBody(updateResumePreviewSchema),
+    asyncHandler(interviewController.updateResumePreviewController)
+)
+
+interviewRouter.post(
+    "/resume/improve/:interviewReportId",
+    validateParams(resumePdfParamsSchema),
+    validateBody(improveResumeSectionSchema),
+    asyncHandler(interviewController.improveResumeSectionController)
+)
+
+interviewRouter.post(
+    "/resume/version/:interviewReportId/:versionId/restore",
+    validateParams(resumeVersionParamsSchema),
+    asyncHandler(interviewController.restoreResumeVersionController)
+)
+
+interviewRouter.post(
+    "/resume/export/:interviewReportId",
+    validateParams(resumePdfParamsSchema),
+    asyncHandler(interviewController.exportEditedResumePdfController)
 )
 
 module.exports = interviewRouter

@@ -5,7 +5,8 @@ import { useForm } from "react-hook-form"
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts"
 import { z } from "zod"
 import { useToast } from "../../../components/toast.context"
-import { createAtsAnalysis, deleteAtsAnalysis, getAtsAnalyses } from "../services/ats.api"
+import { getInterviewSources } from "../../interview/services/interview.api"
+import { createAtsAnalysis, createAtsAnalysisFromInterview, deleteAtsAnalysis, getAtsAnalyses } from "../services/ats.api"
 import "../style.scss"
 
 const atsSchema = z.object({
@@ -75,10 +76,15 @@ export default function ATS() {
     const { showToast } = useToast()
     const [ analysis, setAnalysis ] = useState(null)
     const [ history, setHistory ] = useState([])
+    const [ interviewSources, setInterviewSources ] = useState([])
+    const [ selectedInterviewSource, setSelectedInterviewSource ] = useState("")
     const [ loading, setLoading ] = useState(false)
-    const { register, watch, handleSubmit, formState: { errors, isValid } } = useForm({
+    const { register, watch, handleSubmit, reset, setValue, formState: { errors, isValid } } = useForm({
         resolver: zodResolver(atsSchema),
-        mode: "onChange"
+        mode: "onChange",
+        defaultValues: {
+            jobDescription: ""
+        }
     })
     const resumeFiles = watch("resume")
     const resumeName = resumeFiles?.[0]?.name
@@ -88,10 +94,23 @@ export default function ATS() {
         getAtsAnalyses()
             .then((data) => {
                 setHistory(data.analyses || [])
-                setAnalysis(data.analyses?.[0] || null)
             })
             .catch((error) => showToast(error.message, "error"))
+        getInterviewSources()
+            .then((data) => setInterviewSources((data.sources || []).filter((source) => source.hasResume)))
+            .catch(() => setInterviewSources([]))
     }, [ showToast ])
+
+    const handleInterviewSourceChange = (event) => {
+        const sourceId = event.target.value
+        const source = interviewSources.find((item) => item._id === sourceId)
+
+        setSelectedInterviewSource(sourceId)
+
+        if (source) {
+            setValue("jobDescription", source.jobDescription || "", { shouldValidate: true, shouldDirty: true })
+        }
+    }
 
     const handleSelectAnalysis = (selectedAnalysis) => {
         setAnalysis(selectedAnalysis)
@@ -122,7 +141,31 @@ export default function ATS() {
             const data = await createAtsAnalysis({ jobDescription, resumeFile: resume[0] })
             setAnalysis(data.analysis)
             setHistory((current) => [data.analysis, ...current.filter((item) => item._id !== data.analysis._id)])
+            reset({ jobDescription: "" })
+            setSelectedInterviewSource("")
             showToast("ATS analysis generated.", "success")
+        } catch (error) {
+            showToast(error.message, "error")
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleRunFromInterview = async () => {
+        if (!selectedInterviewSource) {
+            showToast("Choose an interview plan first.", "error")
+            return
+        }
+
+        setLoading(true)
+
+        try {
+            const data = await createAtsAnalysisFromInterview(selectedInterviewSource)
+            setAnalysis(data.analysis)
+            setHistory((current) => [data.analysis, ...current.filter((item) => item._id !== data.analysis._id)])
+            reset({ jobDescription: "" })
+            setSelectedInterviewSource("")
+            showToast("ATS analysis generated from interview plan.", "success")
         } catch (error) {
             showToast(error.message, "error")
         } finally {
@@ -138,6 +181,29 @@ export default function ATS() {
             </header>
 
             <form className="feature-card ats-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+                {interviewSources.length > 0 && (
+                    <div className="bridge-panel">
+                        <label>
+                            Reuse interview plan
+                            <select value={selectedInterviewSource} onChange={handleInterviewSourceChange}>
+                                <option value="">Choose a saved plan</option>
+                                {interviewSources.map((source) => (
+                                    <option key={source._id} value={source._id}>
+                                        {source.title || "Interview plan"} - {new Date(source.createdAt).toLocaleDateString()}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                        <button
+                            className="button secondary-button"
+                            type="button"
+                            onClick={handleRunFromInterview}
+                            disabled={!selectedInterviewSource || loading}
+                        >
+                            Run ATS From Plan
+                        </button>
+                    </div>
+                )}
                 <label className="ats-upload-field" htmlFor="ats-resume">
                     <span className="section-label">
                         Resume PDF

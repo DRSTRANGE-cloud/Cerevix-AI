@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import "../style/home.scss"
 import { useInterview } from '../hooks/useInterview.js'
-import { Link, useNavigate } from 'react-router'
+import { useNavigate } from 'react-router'
 import { useToast } from '../../../components/toast.context.js'
+import { getAtsSources } from '../../ats/services/ats.api.js'
 
 const Home = () => {
 
@@ -11,13 +12,35 @@ const Home = () => {
     const [ jobDescription, setJobDescription ] = useState("")
     const [ selfDescription, setSelfDescription ] = useState("")
     const [ resumeFile, setResumeFile ] = useState(null)
+    const [ resumeText, setResumeText ] = useState("")
+    const [ atsSources, setAtsSources ] = useState([])
+    const [ selectedAtsSource, setSelectedAtsSource ] = useState("")
     const [ formError, setFormError ] = useState("")
 
     const navigate = useNavigate()
 
     useEffect(() => {
         getReports().catch((error) => showToast(error.message, "error"))
+        getAtsSources()
+            .then((data) => setAtsSources((data.sources || []).filter((source) => source.resume && source.jobDescription)))
+            .catch(() => setAtsSources([]))
     }, [ getReports, showToast ])
+
+    const handleAtsSourceChange = (event) => {
+        const sourceId = event.target.value
+        const source = atsSources.find((item) => item._id === sourceId)
+
+        setSelectedAtsSource(sourceId)
+
+        if (!source) {
+            return
+        }
+
+        setJobDescription(source.jobDescription || "")
+        setResumeText(source.resume || "")
+        setResumeFile(null)
+        setFormError("")
+    }
 
     const handleGenerateReport = async (event) => {
         event.preventDefault()
@@ -28,13 +51,13 @@ const Home = () => {
             return
         }
 
-        if (!resumeFile && !selfDescription.trim()) {
+        if (!resumeFile && !resumeText.trim() && !selfDescription.trim()) {
             setFormError("Upload a resume PDF or add a quick self-description.")
             return
         }
 
         try {
-            const data = await generateReport({ jobDescription, selfDescription, resumeFile })
+            const data = await generateReport({ jobDescription, selfDescription, resumeFile, resumeText })
             showToast("Interview plan generated.", "success")
             navigate(`/interview/${data._id}`)
         } catch (error) {
@@ -66,6 +89,8 @@ const Home = () => {
 
         setFormError("")
         setResumeFile(file)
+        setResumeText("")
+        setSelectedAtsSource("")
     }
 
     const handleRemoveReport = async (event, reportId) => {
@@ -148,6 +173,20 @@ const Home = () => {
                             <h2>Your Profile</h2>
                         </div>
 
+                        {atsSources.length > 0 && (
+                            <div className='reuse-section'>
+                                <label className='section-label' htmlFor='atsSource'>Reuse ATS Scan</label>
+                                <select id='atsSource' value={selectedAtsSource} onChange={handleAtsSourceChange}>
+                                    <option value=''>Choose a previous ATS scan</option>
+                                    {atsSources.map((source) => (
+                                        <option key={source._id} value={source._id}>
+                                            ATS {source.atsScore}% - {new Date(source.createdAt).toLocaleDateString()}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+
                         {/* Upload Resume */}
                         <div className='upload-section'>
                             <label className='section-label'>
@@ -159,7 +198,7 @@ const Home = () => {
                                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 16 12 12 8 16" /><line x1="12" y1="12" x2="12" y2="21" /><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" /></svg>
                                 </span>
                                 <p className='dropzone__title'>Click to upload or drag &amp; drop</p>
-                                <p className='dropzone__subtitle'>{resumeFile ? resumeFile.name : "PDF only (Max 3MB)"}</p>
+                                <p className='dropzone__subtitle'>{resumeFile ? resumeFile.name : resumeText ? "Using resume text from ATS scan" : "PDF only (Max 3MB)"}</p>
                                 <input onChange={handleFileChange} hidden type='file' id='resume' name='resume' accept='application/pdf,.pdf' />
                             </label>
                         </div>

@@ -14,6 +14,16 @@ export async function getAtsAnalyses() {
     return response.data
 }
 
+export async function getAtsSources() {
+    const response = await apiClient.get("/api/ats/sources")
+    return response.data
+}
+
+export async function createAtsAnalysisFromInterview(interviewId) {
+    const response = await apiClient.post(`/api/ats/from-interview/${interviewId}`)
+    return response.data
+}
+
 export async function deleteAtsAnalysis(analysisId) {
     const response = await apiClient.delete(`/api/ats/${analysisId}`)
     return response.data

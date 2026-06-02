@@ -20,6 +20,10 @@ if (missingEnv.length > 0) {
 
 const isProduction = process.env.NODE_ENV === "production";
 const port = Number(process.env.PORT || 3000);
+const corsOrigin = (process.env.CORS_ORIGIN || process.env.FRONTEND_URL || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 if (!Number.isInteger(port) || port <= 0) {
   throw new Error("PORT must be a positive number.");
@@ -31,7 +35,11 @@ module.exports = {
   googleGenAiApiKey: process.env.GOOGLE_GENAI_API_KEY,
   nodeEnv: process.env.NODE_ENV || "development",
   port,
-  corsOrigin: ["http://localhost:5173", "https://cerevix-ai.vercel.app"],
+  corsOrigin: [
+    "http://localhost:5173",
+    "https://cerevix-ai.vercel.app",
+    ...corsOrigin,
+  ],
   dnsServers: (process.env.DNS_SERVERS || "1.1.1.1,8.8.8.8")
     .split(",")
     .map((server) => server.trim())

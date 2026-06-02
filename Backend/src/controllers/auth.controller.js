@@ -2,7 +2,7 @@ const userModel = require("../models/user.model")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const tokenBlacklistModel = require("../models/blacklist.model")
-const { jwtSecret, cookieOptions, clearCookieOptions } = require("../config/env")
+const { jwtSecret, clearCookieOptions } = require("../config/env")
 const { ApiError, toPublicUser } = require("../utils/http")
 
 function createToken(user) {
@@ -42,6 +42,7 @@ async function registerUserController(req, res) {
 
     res.status(201).json({
         message: "User registered successfully",
+        token,
         user: toPublicUser(user)
     })
 
@@ -85,10 +86,21 @@ async function loginUserController(req, res) {
  * @access public
  */
 async function logoutUserController(req, res) {
-    const token = req.cookies.token
-    async function logoutUserController(req, res) {
+    const headerToken = req.headers.authorization?.startsWith("Bearer ")
+        ? req.headers.authorization.split(" ")[1]
+        : null
+    const token = headerToken || req.cookies.token
+
+    if (token) {
+        await tokenBlacklistModel.updateOne(
+            { token },
+            { $setOnInsert: { token } },
+            { upsert: true }
+        )
+    }
+
+    res.clearCookie("token", clearCookieOptions)
     res.status(200).json({ message: "User logged out successfully" })
-}
 }
 
 /**

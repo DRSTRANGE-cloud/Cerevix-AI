@@ -20,6 +20,7 @@
     /* every direct child gets the same max-width column */
     > * {
         width: min(100%, 1280px);
+        min-width: 0;
     }
 }
 
@@ -79,6 +80,7 @@
 .overview-card {
     display: grid;
     gap: var(--space-2);
+    min-width: 0;
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg, 1rem);
@@ -97,6 +99,7 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.06em;
+        overflow-wrap: anywhere;
     }
 
     strong {
@@ -134,6 +137,11 @@
     transition: border-color 0.2s;
 
     &:hover { border-color: rgba(20, 184, 166, 0.2); }
+
+    .recharts-wrapper,
+    .recharts-responsive-container {
+        min-width: 0;
+    }
 }
 
 .empty-chart-state {
@@ -268,12 +276,14 @@
         font-size: 0.9rem;
         font-weight: 700;
         color: var(--color-text);
+        overflow-wrap: anywhere;
     }
 
     span {
         color: var(--color-muted);
         font-size: 0.82rem;
         line-height: 1.5;
+        overflow-wrap: anywhere;
     }
 }
 
@@ -355,7 +365,7 @@
     }
 
     .overview-grid {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
         gap: var(--space-2);
     }
 

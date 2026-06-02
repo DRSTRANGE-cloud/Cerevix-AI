@@ -48,6 +48,55 @@ const preparationPlanSchema = new mongoose.Schema({
     _id: false
 })
 
+const resumeAnalyticsSchema = new mongoose.Schema({
+    atsScore: { type: Number, min: 0, max: 100, default: 0 },
+    keywordMatch: { type: Number, min: 0, max: 100, default: 0 },
+    skillCoverage: { type: Number, min: 0, max: 100, default: 0 },
+    readabilityScore: { type: Number, min: 0, max: 100, default: 0 },
+    resumeLengthScore: { type: Number, min: 0, max: 100, default: 0 },
+    actionVerbScore: { type: Number, min: 0, max: 100, default: 0 },
+    missingSkills: [ String ]
+}, {
+    _id: false
+})
+
+const resumeRecommendationSchema = new mongoose.Schema({
+    issue: String,
+    suggestedImprovement: String,
+    importance: {
+        type: String,
+        enum: [ "low", "medium", "high" ],
+        default: "medium"
+    },
+    section: String
+}, {
+    _id: false
+})
+
+const resumeVersionSchema = new mongoose.Schema({
+    html: String,
+    sections: mongoose.Schema.Types.Mixed,
+    analytics: resumeAnalyticsSchema,
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    label: String
+}, {
+    _id: true
+})
+
+const resumeBuilderSchema = new mongoose.Schema({
+    html: String,
+    sections: mongoose.Schema.Types.Mixed,
+    recommendations: [ resumeRecommendationSchema ],
+    analytics: resumeAnalyticsSchema,
+    versions: [ resumeVersionSchema ],
+    updatedAt: Date
+}, {
+    _id: false
+})
+
 const interviewReportSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -73,7 +122,8 @@ const interviewReportSchema = new mongoose.Schema({
     title: {
         type: String,
         required: [ true, "Job title is required" ]
-    }
+    },
+    resumeBuilder: resumeBuilderSchema
 }, {
     timestamps: true
 })

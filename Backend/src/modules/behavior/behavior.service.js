@@ -206,7 +206,7 @@ async function refreshUserBehaviorAnalysis(userId) {
     return behaviorAnalysisModel.findOneAndUpdate(
         { user: userId },
         { $set: { user: userId, ...analysis } },
-        { new: true, upsert: true, setDefaultsOnInsert: true }
+        { returnDocument: "after", upsert: true, setDefaultsOnInsert: true }
     ).lean()
 }
 

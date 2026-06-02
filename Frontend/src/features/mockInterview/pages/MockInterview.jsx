@@ -274,6 +274,13 @@ export default function MockInterview() {
 
                     <section className="chat-container">
                         <div className="chat-panel">
+                            <header className="chat-header">
+                                <div>
+                                    <p className="section-kicker">Live Interview</p>
+                                    <h2>{session.role}</h2>
+                                </div>
+                                <span>{session.evaluations.length + 1 > 5 ? 5 : session.evaluations.length + 1} of 5</span>
+                            </header>
                             <div className="chat-messages" aria-live="polite">
                                 {session.messages.map((message, index) => (
                                     <Motion.div
@@ -284,7 +291,7 @@ export default function MockInterview() {
                                         transition={{ duration: 0.3 }}
                                     >
                                         {message.role === 'assistant' && (
-                                            <div className="bubble-avatar">Cerevix</div>
+                                            <div className="bubble-avatar">AI</div>
                                         )}
                                         <p>{message.content}</p>
                                     </Motion.div>
