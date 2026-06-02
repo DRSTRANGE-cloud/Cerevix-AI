@@ -1,8 +1,5 @@
 <div align="center">
-<<<<<<< HEAD
-  
-=======
->>>>>>> a2a0775 (Resume Reccommendation and Minor Bug Fixes)
+
 # Cerevix AI
 
 **AI-powered interview preparation platform for serious job seekers.**
