@@ -1,10 +1,10 @@
 {
-  "name": "yt-genai",
+  "name": "Cerevix-AI",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "npm run dev",
     "test": "node test/run-tests.js",
     "dev": "nodemon server.js"
   },
