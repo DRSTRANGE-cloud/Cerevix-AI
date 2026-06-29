@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
+    "@vercel/speed-insights": "^2.0.0",
     "axios": "^1.13.5",
     "framer-motion": "^12.40.0",
     "react": "^19.2.0",
